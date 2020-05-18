@@ -1,7 +1,6 @@
 import React, { useReducer, createContext, useEffect, useMemo } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { createStackNavigator } from "@react-navigation/stack";
-import { StyleSheet } from "react-native";
 
 import BottomTabNavigator from "../navigation/BottomTabNavigator";
 import SignUpScreen from "../screens/SignupScreen";
@@ -9,6 +8,7 @@ import SignInScreen from "../screens/SignInScreen";
 import { AUTH_TOKEN } from "../constants";
 import gql from "graphql-tag";
 import { AsyncStorage } from "react-native";
+import EditEntryScreen from "../screens/EditEntryScreen";
 
 export const AuthContext = createContext<any>(undefined);
 
@@ -134,26 +134,12 @@ export default function Main({ navigation }: any) {
           </>
         ) : (
           // User is signed in
-          <Stack.Screen name="Root" component={BottomTabNavigator} />
-          // <Stack.Screen name="Home" component={HomeScreen} />
+          <>
+            <Stack.Screen name="Root" component={BottomTabNavigator} />
+            <Stack.Screen name="EditEntry" component={EditEntryScreen} />
+          </>
         )}
       </Stack.Navigator>
     </AuthContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    height: 50,
-    borderBottomWidth: 2,
-    borderBottomColor: "#2196f3",
-    margin: 10,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingTop: 40,
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  },
-});

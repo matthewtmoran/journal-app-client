@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useMutation } from "@apollo/react-hooks";
 import { StyleSheet, View, TextInput, Button } from "react-native";
 import { AuthContext } from "../components/Main";
 
@@ -8,11 +7,9 @@ const SignInScreen = ({ navigation }: any) => {
   const [password, setPassword] = useState("");
   const { signIn } = React.useContext(AuthContext);
 
-  console.log({ email });
-  console.log({ password });
-
   return (
     <View style={styles.container}>
+      {/* TODO: REMOVE */}
       <Button
         title="Populate - Valid"
         onPress={() => {

@@ -1,5 +1,5 @@
 import * as WebBrowser from "expo-web-browser";
-import * as React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Button,
   Image,
@@ -9,20 +9,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
 
 import { MonoText } from "../components/StyledText";
-import Auth from "../utils/Auth";
 import { AuthContext } from "../components/Main";
+import RecentEntries from "../components/RecentEntries";
+import { Audio } from "expo-av";
+import * as FileSystem from "expo-file-system";
+import RecordAudioContainer from "../components/RecordAudio";
 
-const auth = new Auth();
-
-export default function HomeScreen() {
-  console.log("Home");
-
+export default function HomeScreen({ navigation }: any) {
   const { signOut } = React.useContext(AuthContext);
+
   return (
     <View style={styles.container}>
+      <RecentEntries />
+      <RecordAudioContainer navigation={navigation} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}

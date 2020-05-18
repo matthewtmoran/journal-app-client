@@ -19,6 +19,7 @@
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
     "expo": "~37.0.3",
+    "expo-av": "^8.1.0",
     "expo-font": "^8.1.1",
     "expo-linking": "^1.0.1",
     "expo-splash-screen": "^0.2.3",
