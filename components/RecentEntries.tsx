@@ -3,12 +3,17 @@ import { StyleSheet, Text, View, FlatList } from "react-native";
 
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
+import EntryPreview from "./EntryPreview";
 
-const ENTRIES_QUERY = gql`
+export const ENTRIES_QUERY = gql`
   query EntiesQuery {
     entries {
       id
       title
+      description
+      imagePath
+      audioPath
+      body
       categories {
         name
         color
@@ -17,7 +22,7 @@ const ENTRIES_QUERY = gql`
   }
 `;
 
-const RecentEntries: FunctionComponent = () => {
+const RecentEntries = () => {
   const { loading, error, data } = useQuery(ENTRIES_QUERY, {});
   if (loading) {
     return (
@@ -33,13 +38,21 @@ const RecentEntries: FunctionComponent = () => {
       </View>
     );
   }
+
+  const recent = data.entries.slice(
+    data.entries.length - 4,
+    data.entries.length
+  );
+
   return (
     <View>
       <Text>Recent Entries</Text>
       <FlatList
-        data={data.entries}
+        data={recent}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text style={styles.item}>{item.title}</Text>}
+        renderItem={({ item }) => (
+          <EntryPreview style={styles.item} entry={item} />
+        )}
       />
     </View>
   );

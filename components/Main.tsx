@@ -9,6 +9,7 @@ import { AUTH_TOKEN } from "../constants";
 import gql from "graphql-tag";
 import { AsyncStorage } from "react-native";
 import EditEntryScreen from "../screens/EditEntryScreen";
+import EntryDetailsScreen from "../screens/EntryDetailsScreen";
 
 export const AuthContext = createContext<any>(undefined);
 
@@ -137,6 +138,7 @@ export default function Main({ navigation }: any) {
           <>
             <Stack.Screen name="Root" component={BottomTabNavigator} />
             <Stack.Screen name="EditEntry" component={EditEntryScreen} />
+            <Stack.Screen name="EntryDetails" component={EntryDetailsScreen} />
           </>
         )}
       </Stack.Navigator>

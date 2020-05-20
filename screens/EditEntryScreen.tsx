@@ -1,7 +1,19 @@
-import React from "react";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RouteProp } from "@react-navigation/native";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useState, ChangeEvent } from "react";
+import { useMutation } from "@apollo/react-hooks";
+import { format } from "date-fns";
+import { RouteProp, NavigationProp } from "@react-navigation/native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  NativeSyntheticEvent,
+  TextInputChangeEventData,
+  Button,
+} from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import gql from "graphql-tag";
+import { ENTRIES_QUERY } from "../components/RecentEntries";
 
 interface IParams {
   EditEntry: {
@@ -10,25 +22,143 @@ interface IParams {
   [key: string]: object;
 }
 
-interface IEditEntryNavigationProps extends RouteProp<IParams, "EditEntry"> {}
+interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
+interface IEditEntryNavigationProps
+  extends NavigationProp<IParams, "EditEntry"> {}
 
 interface IEditEntryScreen {
-  route: IEditEntryNavigationProps;
+  route: IEditEntryRouteProps;
+  navigation: IEditEntryNavigationProps;
 }
 
-const EditEntryScreen = ({ route }: IEditEntryScreen) => {
+interface ICategory {
+  name: string;
+  color: string;
+}
+
+interface ICreateEntryInput {
+  title: string;
+  body: string;
+  description: string;
+  categories: ICategory[];
+  imagePath: string;
+  audioPath: string;
+}
+
+const CREATE_ENTRY_MUTATION = gql`
+  mutation CreateEntryMutation(
+    $title: String!
+    $body: String
+    $description: String
+    $audioPath: String
+  ) {
+    createEntry(
+      data: {
+        title: $title
+        body: $body
+        description: $description
+        audioPath: $audioPath
+      }
+    ) {
+      id
+      title
+      description
+      imagePath
+      audioPath
+      body
+      categories {
+        name
+        color
+      }
+    }
+  }
+  # refetchQueries: [{query: ENTRIES_QUERY }]
+`;
+
+interface IEntry extends ICreateEntryInput {
+  id: string;
+}
+
+interface IResponse {
+  entries: IEntry[];
+}
+
+const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
+  const date = format(Date.now(), "yyyyMMddHHmm");
   const { audioPath } = route.params;
+  const [title, setTitle] = useState(date);
+  const [body, setBody] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [createEntry, createEntryEvents] = useMutation(CREATE_ENTRY_MUTATION, {
+    onCompleted(data) {
+      navigation.navigate("Home");
+    },
+    onError(error) {
+      console.log({ error });
+    },
+  });
+
+  const handleSave = () => {
+    createEntry({
+      variables: { title, body, description, audioPath },
+      update: (cache, { data: { createEntry } }) => {
+        const data: any = cache.readQuery({ query: ENTRIES_QUERY });
+        cache.writeQuery({
+          query: ENTRIES_QUERY,
+          data: { entries: [...data.entries, createEntry] },
+        });
+      },
+    });
+  };
 
   return (
     <View>
-      <Text>Edit Entry</Text>
-      <TextInput placeholder="Title" style={styles.input} />
-      <TextInput
-        placeholder="Audio Path"
-        style={styles.input}
-        editable={false}
-        defaultValue={audioPath}
-      />
+      <ScrollView>
+        <Text>Edit Entry</Text>
+        <View>
+          <Text>Title</Text>
+          <TextInput
+            placeholder="Title"
+            style={styles.input}
+            defaultValue={date}
+            onChangeText={(text: string) => setTitle(text)}
+          />
+        </View>
+        <View>
+          <Text>Body</Text>
+          <View style={styles.textAreaContainer}>
+            <TextInput
+              style={styles.textArea}
+              placeholder="Body"
+              numberOfLines={5}
+              onChangeText={(text: string) => setBody(text)}
+            />
+          </View>
+        </View>
+        <View>
+          <Text>Description</Text>
+          <View style={styles.textAreaContainer}>
+            <TextInput
+              style={styles.textArea}
+              placeholder="Description"
+              numberOfLines={5}
+              multiline={true}
+              onChangeText={(text: string) => setDescription(text)}
+            />
+          </View>
+        </View>
+        <View>
+          <Text>Audio File</Text>
+          <TextInput
+            placeholder="Audio Path"
+            style={styles.input}
+            editable={false}
+            defaultValue={audioPath}
+          />
+        </View>
+        <Button title="Save" onPress={handleSave} />
+      </ScrollView>
     </View>
   );
 };
@@ -39,6 +169,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "#2196f3",
     margin: 10,
+  },
+  textAreaContainer: {
+    borderColor: "#2196f3",
+    padding: 5,
+    borderWidth: 2,
+  },
+  textArea: {
+    height: 125,
+    justifyContent: "flex-start",
+    textAlignVertical: "top",
   },
   container: {
     flex: 1,
