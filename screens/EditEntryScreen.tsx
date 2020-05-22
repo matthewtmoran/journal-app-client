@@ -14,6 +14,7 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import gql from "graphql-tag";
 import { ENTRIES_QUERY } from "../components/RecentEntries";
+import AddCategories from "../components/AddCategories";
 
 interface IParams {
   EditEntry: {
@@ -51,6 +52,7 @@ const CREATE_ENTRY_MUTATION = gql`
     $body: String
     $description: String
     $audioPath: String
+    $categories: [CreateCategoryInput!]
   ) {
     createEntry(
       data: {
@@ -58,30 +60,24 @@ const CREATE_ENTRY_MUTATION = gql`
         body: $body
         description: $description
         audioPath: $audioPath
+        categories: $categories
       }
     ) {
       id
       title
       description
+      createdAt
       imagePath
       audioPath
       body
       categories {
+        id
         name
         color
       }
     }
   }
-  # refetchQueries: [{query: ENTRIES_QUERY }]
 `;
-
-interface IEntry extends ICreateEntryInput {
-  id: string;
-}
-
-interface IResponse {
-  entries: IEntry[];
-}
 
 const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
   const date = format(Date.now(), "yyyyMMddHHmm");
@@ -89,6 +85,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
   const [title, setTitle] = useState(date);
   const [body, setBody] = useState("");
   const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState<ICategory[]>([]);
 
   const [createEntry, createEntryEvents] = useMutation(CREATE_ENTRY_MUTATION, {
     onCompleted(data) {
@@ -101,7 +98,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
 
   const handleSave = () => {
     createEntry({
-      variables: { title, body, description, audioPath },
+      variables: { title, body, description, audioPath, categories },
       update: (cache, { data: { createEntry } }) => {
         const data: any = cache.readQuery({ query: ENTRIES_QUERY });
         cache.writeQuery({
@@ -109,6 +106,12 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
           data: { entries: [...data.entries, createEntry] },
         });
       },
+    });
+  };
+
+  const handleAddCategory = (category: ICategory) => {
+    setCategories((currentCategories: ICategory[]) => {
+      return [...currentCategories, category];
     });
   };
 
@@ -125,6 +128,10 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
             onChangeText={(text: string) => setTitle(text)}
           />
         </View>
+        <AddCategories
+          categories={categories}
+          onAddCategory={handleAddCategory}
+        />
         <View>
           <Text>Body</Text>
           <View style={styles.textAreaContainer}>

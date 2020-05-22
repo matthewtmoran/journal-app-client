@@ -16,6 +16,7 @@ export const ENTRIES_QUERY = gql`
       body
       createdAt
       categories {
+        id
         name
         color
       }
@@ -42,7 +43,6 @@ const RecentEntries = () => {
 
   const recent = data.entries
     .sort((a: any, b: any) => {
-      console.log({ a });
       return Number(new Date(a.createdAt)) - Number(new Date(b.createdAt));
     })
     .slice(data.entries.length - 4, data.entries.length);

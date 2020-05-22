@@ -179,7 +179,6 @@ const PlayAudio = ({ audioPath }: IPlayAudio) => {
 
   return (
     <View>
-      <Text>{audioPath}</Text>
       <Text>Is playing? - {String(state.isPlaying)}</Text>
       <Button
         title={state.isPlaying ? "Pause" : "Play"}

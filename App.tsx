@@ -1,17 +1,42 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StyleSheet } from "react-native";
+import { ApolloLink } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
+import { onError } from "apollo-link-error";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { AsyncStorage } from "react-native";
 import { ApolloProvider } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 
 import { AUTH_TOKEN } from "./constants";
 import useCachedResources from "./hooks/useCachedResources";
 import LinkingConfiguration from "./navigation/LinkingConfiguration";
 import Main from "./components/Main";
+
+const typeDefs = gql`
+  input CreateCategoryInput {
+    id: ID
+    color: String!
+    count: Int
+    name: String!
+  }
+`;
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.map(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  }
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+  }
+});
 
 const httpLink = createHttpLink({
   uri: "http://192.168.1.11:4000",
@@ -35,8 +60,11 @@ const authLink = setContext((_, { headers }: any) => {
   });
 });
 
+const link = ApolloLink.from([authLink, errorLink, httpLink]);
+
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link,
+  typeDefs,
   cache: new InMemoryCache(),
 });
 
