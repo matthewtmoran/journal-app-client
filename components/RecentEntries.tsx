@@ -14,6 +14,7 @@ export const ENTRIES_QUERY = gql`
       imagePath
       audioPath
       body
+      createdAt
       categories {
         name
         color
@@ -39,10 +40,12 @@ const RecentEntries = () => {
     );
   }
 
-  const recent = data.entries.slice(
-    data.entries.length - 4,
-    data.entries.length
-  );
+  const recent = data.entries
+    .sort((a: any, b: any) => {
+      console.log({ a });
+      return Number(new Date(a.createdAt)) - Number(new Date(b.createdAt));
+    })
+    .slice(data.entries.length - 4, data.entries.length);
 
   return (
     <View>

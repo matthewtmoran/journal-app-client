@@ -2,6 +2,7 @@ import React, { FunctionComponent } from "react";
 import { Text, View } from "react-native";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import IEntry from "../interfaces/IEntry";
+import PlayAudio from "../components/PlayAudio";
 
 interface IParams {
   EntryDetails: {
@@ -24,6 +25,7 @@ const EntryDetailsScreen = ({ route }: IEntryDetailsScreen) => {
       <Text>{entry.title}</Text>
       <Text>{entry.description}</Text>
       <Text>{entry.audioPath}</Text>
+      <PlayAudio audioPath={entry.audioPath} />
     </View>
   );
 };

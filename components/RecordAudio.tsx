@@ -1,5 +1,5 @@
 import React, { useRef, useReducer, useEffect } from "react";
-import { View, Button } from "react-native";
+import { Button } from "react-native";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 
@@ -135,18 +135,27 @@ const RecordAudioContainer = ({ navigation }: any) => {
 
     try {
       await recording.current?.stopAndUnloadAsync();
+      const originalLocation = recording.current?.getURI();
+
+      if (!originalLocation) {
+        throw new Error("Something went wrong with the recording");
+      }
+
+      const info = await FileSystem.getInfoAsync(originalLocation);
+      console.log(`FILE INFO: ${JSON.stringify(info, null, 2)}`);
+
+      const toLocation =
+        FileSystem.documentDirectory + `untitled-${info.modificationTime}.m4a`;
+
+      FileSystem.moveAsync({
+        from: originalLocation as string,
+        to: toLocation,
+      });
+
+      navigation.navigate("EditEntry", { audioPath: toLocation });
     } catch (error) {
       console.log({ error });
     }
-
-    const info = await FileSystem.getInfoAsync(
-      recording.current?.getURI() || ""
-    );
-    console.log("path:", info.uri);
-
-    navigation.navigate("EditEntry", { audioPath: info.uri });
-
-    console.log(`FILE INFO: ${JSON.stringify(info, null, 2)}`);
   };
 
   return (
