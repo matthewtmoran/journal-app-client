@@ -1,44 +1,109 @@
 import React, { useState } from "react";
-import { useMutation } from "@apollo/react-hooks";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import {
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-  TextInput,
-  Button,
-} from "react-native";
-
-import useCachedResources from "../hooks/useCachedResources";
-import BottomTabNavigator from "../navigation/BottomTabNavigator";
-import LinkingConfiguration from "../navigation/LinkingConfiguration";
-import Auth from "../utils/Auth";
-import gql from "graphql-tag";
-
+import { NavigationProp } from "@react-navigation/native";
+import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { AuthContext } from "../components/Main";
+import { RobotBoldText, RobotLightText } from "../components/StyledText";
+import CardView from "../components/CardView";
+import PrimaryButton from "../components/PrimaryButton";
+import SecondaryButton from "../components/SecondaryButton";
+import IParams from "../interfaces/IParams";
+import CommonStyles from "../style/common";
+import * as yup from "yup";
+import { Formik } from "formik";
 
-const SignupScreen = ({ navigation }: any) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const schema = yup.object().shape({
+  email: yup.string().email("Invalid email").required("Required"),
+  password: yup
+    .string()
+    .required("Required")
+    .min(8, "Password is too short - should be 8 chars minimum."),
+});
+
+interface ICredentials {
+  email: string;
+  password: string;
+}
+
+const initialValues = {
+  email: "",
+  password: "",
+};
+
+interface ISignInScreenNavigationProps
+  extends NavigationProp<IParams, "SignInScreen"> {}
+
+interface ISignupScreen {
+  navigation: ISignInScreenNavigationProps;
+}
+
+const SignupScreen = ({ navigation }: ISignupScreen) => {
   const { signUp } = React.useContext(AuthContext);
 
   return (
     <View style={styles.container}>
-      <TextInput
-        onChangeText={(value) => setEmail(value)}
-        style={styles.input}
-        placeholder="Email"
-      />
-      <TextInput
-        onChangeText={(value) => setPassword(value)}
-        style={styles.input}
-        secureTextEntry={true}
-        placeholder="Password"
-      />
-      <Button title="Sign Up" onPress={() => signUp({ email, password })} />
-      <Button title="Sign In" onPress={() => navigation.navigate("Sign In")} />
+      <Formik
+        validationSchema={schema}
+        initialValues={initialValues}
+        onSubmit={(values: ICredentials) => {
+          signUp(values);
+        }}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          isValid,
+          dirty,
+          touched,
+        }) => (
+          <CardView>
+            <RobotLightText style={CommonStyles.title}>
+              Create Account
+            </RobotLightText>
+            <RobotBoldText style={CommonStyles.label}>Email</RobotBoldText>
+            <TextInput
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              value={values.email}
+              style={CommonStyles.input}
+              placeholder="johndoe@example.com"
+            />
+            {errors.email && touched.email ? (
+              <Text style={CommonStyles.errorText}>{errors.email}</Text>
+            ) : null}
+
+            <RobotBoldText style={CommonStyles.label}>Password</RobotBoldText>
+            <TextInput
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              value={values.password}
+              style={CommonStyles.input}
+              secureTextEntry={true}
+              placeholder="Password"
+            />
+            {errors.password && touched.password ? (
+              <Text style={CommonStyles.errorText}>{errors.password}</Text>
+            ) : null}
+
+            <View style={CommonStyles.actionBar}>
+              <SecondaryButton
+                styles={CommonStyles.secondaryButton}
+                onPress={() => navigation.navigate("Sign In")}
+              >
+                Sign In
+              </SecondaryButton>
+              <PrimaryButton
+                onPress={handleSubmit}
+                isDisabled={!(isValid && dirty)}
+              >
+                Create Account
+              </PrimaryButton>
+            </View>
+          </CardView>
+        )}
+      </Formik>
     </View>
   );
 };
@@ -52,10 +117,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#144568",
     paddingTop: 40,
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
 });
 

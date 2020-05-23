@@ -76,6 +76,7 @@ export default function Main({ navigation }: any) {
   const [signIn, signinEvents] = useMutation(SIGNIN_MUTATION, {
     onCompleted(data) {
       const { token } = data.login;
+      AsyncStorage.setItem(AUTH_TOKEN, token);
       dispatch({ type: "SIGN_IN", token });
     },
     onError(error) {
@@ -98,7 +99,10 @@ export default function Main({ navigation }: any) {
       signIn: async ({ email, password }: any) => {
         signIn({ variables: { email, password } });
       },
-      signOut: () => dispatch({ type: "SIGN_OUT" }),
+      signOut: async () => {
+        await AsyncStorage.removeItem(AUTH_TOKEN);
+        dispatch({ type: "SIGN_OUT" });
+      },
       signUp: async ({ email, password }: any) => {
         signUp({ variables: { email, password } });
       },
