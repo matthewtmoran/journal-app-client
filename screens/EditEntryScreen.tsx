@@ -15,6 +15,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import gql from "graphql-tag";
 import { ENTRIES_QUERY } from "../components/RecentEntries";
 import AddCategories from "../components/AddCategories";
+import * as FileSystem from "expo-file-system";
 
 interface IParams {
   EditEntry: {
@@ -43,6 +44,7 @@ interface ICreateEntryInput {
   description: string;
   categories: ICategory[];
   imagePath: string;
+  audioFile: string;
   audioPath: string;
 }
 
@@ -52,6 +54,7 @@ const CREATE_ENTRY_MUTATION = gql`
     $body: String
     $description: String
     $audioPath: String
+    $audioFile: String
     $categories: [CreateCategoryInput!]
   ) {
     createEntry(
@@ -60,6 +63,7 @@ const CREATE_ENTRY_MUTATION = gql`
         body: $body
         description: $description
         audioPath: $audioPath
+        audioFile: $audioFile
         categories: $categories
       }
     ) {
@@ -96,9 +100,13 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
     },
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const audioFile: string = await FileSystem.readAsStringAsync(audioPath, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
     createEntry({
-      variables: { title, body, description, audioPath, categories },
+      variables: { title, body, description, audioPath, audioFile, categories },
       update: (cache, { data: { createEntry } }) => {
         const data: any = cache.readQuery({ query: ENTRIES_QUERY });
         cache.writeQuery({

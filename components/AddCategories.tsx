@@ -36,12 +36,14 @@ const AddCategories = ({ categories, onAddCategory }: IProps) => {
   const { loading, error, data } = useQuery(CATEGORIES_QUERY);
 
   // filter categories that are already selected
-  const userCategories = data.categories.filter((cat: ICategory) => {
-    const exists = categories.find((c) => {
-      return c.id === cat.id;
-    });
-    return !exists;
-  });
+  const userCategories = !loading
+    ? data.categories.filter((cat: ICategory) => {
+        const exists = categories.find((c) => {
+          return c.id === cat.id;
+        });
+        return !exists;
+      })
+    : [];
 
   const handleAddCategory = (category?: ICategory) => {
     if (category) {

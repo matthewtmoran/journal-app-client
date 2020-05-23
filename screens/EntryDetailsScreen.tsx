@@ -46,10 +46,12 @@ const EntryDetailsScreen = ({ route }: IEntryDetailsScreen) => {
     <View>
       <Text>Title</Text>
       <Text>{entry.title}</Text>
-      <Text>Description</Text>
-      <Text>{entry.description}</Text>
+      <Text>Body</Text>
+      <Text>{entry.body}</Text>
       <Text>Categories</Text>
       <CategoryList categories={entry.categories} />
+      <Text>Description</Text>
+      <Text>{entry.description}</Text>
 
       <Text>File Location</Text>
       <Text>{entry.audioPath}</Text>

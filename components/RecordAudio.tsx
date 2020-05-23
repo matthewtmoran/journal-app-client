@@ -54,6 +54,28 @@ const RECORD_AUDIO = "RECORD_AUDIO";
 const RECORDING = "RECORDING";
 const RECORDING_COMPLETE = "RECORDING_COMPLETE";
 
+const recordingOptions = {
+  // android not currently in use, but parameters are required
+  android: {
+    extension: ".amr",
+    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB,
+    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
+    sampleRate: 8000,
+    numberOfChannels: 2,
+    bitRate: 128000,
+  },
+  ios: {
+    extension: ".wav",
+    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+    sampleRate: 44100,
+    numberOfChannels: 1,
+    bitRate: 128000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+};
+
 const RecordAudioContainer = ({ navigation }: any) => {
   const recording = useRef<Audio.Recording | null>(null);
   const [state, dispatch] = useReducer((prevState: IState, action: any) => {
@@ -119,7 +141,9 @@ const RecordAudioContainer = ({ navigation }: any) => {
     }
     try {
       const rec = new Audio.Recording();
-      await rec.prepareToRecordAsync(recordingSettings);
+      await rec.prepareToRecordAsync(recordingOptions);
+
+      console.log({ rec });
 
       recording.current = rec;
       await recording.current.startAsync();
