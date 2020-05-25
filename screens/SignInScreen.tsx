@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { AuthContext } from "../components/Main";
@@ -10,6 +10,7 @@ import IParams from "../interfaces/IParams";
 import CommonStyles from "../style/common";
 import * as yup from "yup";
 import { Formik } from "formik";
+import ICredentials from "../interfaces/ICredentials";
 
 interface ISignInScreenNavigationProps
   extends NavigationProp<IParams, "SignInScreen"> {}
@@ -26,26 +27,29 @@ const schema = yup.object().shape({
     .min(8, "Password is too short - should be 8 chars minimum."),
 });
 
-interface ICredentials {
-  email: string;
-  password: string;
-}
-
-const initialValues = {
+const initialValues: ICredentials = {
   email: "",
   password: "",
 };
 
 const SignInScreen = ({ navigation }: ISignInScreen) => {
   const { signIn } = React.useContext(AuthContext);
+  const formikRef = useRef<any>(null);
+
+  const apiError = (error: string) => {
+    formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
+  };
 
   return (
     <View style={styles.container}>
       <Formik
+        innerRef={formikRef}
         validationSchema={schema}
         initialValues={initialValues}
         onSubmit={(values: ICredentials) => {
-          signIn(values);
+          signIn(values).catch((error: any) => {
+            apiError(error.message);
+          });
         }}
       >
         {({
@@ -83,6 +87,10 @@ const SignInScreen = ({ navigation }: ISignInScreen) => {
             />
             {errors.password && touched.password ? (
               <Text style={CommonStyles.errorText}>{errors.password}</Text>
+            ) : null}
+
+            {errors.api ? (
+              <Text style={CommonStyles.errorText}>{errors.api}</Text>
             ) : null}
 
             <View style={CommonStyles.actionBar}>

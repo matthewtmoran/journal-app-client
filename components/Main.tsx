@@ -10,6 +10,7 @@ import gql from "graphql-tag";
 import { AsyncStorage } from "react-native";
 import EditEntryScreen from "../screens/EditEntryScreen";
 import EntryDetailsScreen from "../screens/EntryDetailsScreen";
+import ICredentials from "../interfaces/ICredentials";
 
 export const AuthContext = createContext<any>(undefined);
 
@@ -96,15 +97,23 @@ export default function Main({ navigation }: any) {
 
   const authContext = useMemo(
     () => ({
-      signIn: async ({ email, password }: any) => {
-        signIn({ variables: { email, password } });
+      signIn: async ({ email, password }: ICredentials) => {
+        return signIn({ variables: { email, password } }).then(() => {
+          if (signinEvents.error) {
+            throw new Error(signinEvents.error.message);
+          }
+        });
       },
       signOut: async () => {
         await AsyncStorage.removeItem(AUTH_TOKEN);
         dispatch({ type: "SIGN_OUT" });
       },
       signUp: async ({ email, password }: any) => {
-        signUp({ variables: { email, password } });
+        return signUp({ variables: { email, password } }).then(() => {
+          if (signupEvents.error) {
+            throw new Error(signupEvents.error.message);
+          }
+        });
       },
     }),
     []

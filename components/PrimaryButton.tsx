@@ -21,7 +21,6 @@ const PrimaryButton: FunctionComponent<IPrimaryButton> = ({
     }
     return onPress();
   };
-  console.log({ isDisabled });
   return (
     <TouchableOpacity onPress={handleOnPress}>
       <View

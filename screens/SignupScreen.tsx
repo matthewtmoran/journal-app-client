@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { AuthContext } from "../components/Main";
@@ -38,14 +38,22 @@ interface ISignupScreen {
 
 const SignupScreen = ({ navigation }: ISignupScreen) => {
   const { signUp } = React.useContext(AuthContext);
+  const formikRef = useRef<any>(null);
+
+  const apiError = (error: string) => {
+    formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
+  };
 
   return (
     <View style={styles.container}>
       <Formik
+        innerRef={formikRef}
         validationSchema={schema}
         initialValues={initialValues}
         onSubmit={(values: ICredentials) => {
-          signUp(values);
+          signUp(values).catch((error: any) => {
+            apiError(error.message);
+          });
         }}
       >
         {({
@@ -85,6 +93,10 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
             />
             {errors.password && touched.password ? (
               <Text style={CommonStyles.errorText}>{errors.password}</Text>
+            ) : null}
+
+            {errors.api ? (
+              <Text style={CommonStyles.errorText}>{errors.api}</Text>
             ) : null}
 
             <View style={CommonStyles.actionBar}>
