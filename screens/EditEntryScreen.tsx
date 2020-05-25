@@ -16,13 +16,7 @@ import gql from "graphql-tag";
 import { ENTRIES_QUERY } from "../components/RecentEntries";
 import AddCategories from "../components/AddCategories";
 import * as FileSystem from "expo-file-system";
-
-interface IParams {
-  EditEntry: {
-    audioPath: string;
-  };
-  [key: string]: object;
-}
+import IParams from "../interfaces/IParams";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
