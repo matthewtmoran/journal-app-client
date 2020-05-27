@@ -1,11 +1,9 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { Text, View } from "react-native";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import IEntry from "../interfaces/IEntry";
 import PlayAudio from "../components/PlayAudio";
-import { FlatList } from "react-native-gesture-handler";
 import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
 import CategoryList from "../components/CategoryList";
 
 interface IParams {

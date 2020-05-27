@@ -7,6 +7,7 @@ interface IEntry {
   categories: ICategory[];
   imagePath: string;
   audioPath: string;
+  updatedAt: string;
 }
 
 export default IEntry;

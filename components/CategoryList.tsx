@@ -5,12 +5,14 @@ import ICategory from "../interfaces/ICategory";
 interface IProps {
   categories: ICategory[];
   onPress?: (category: ICategory) => void;
+  keyId?: string;
 }
 
-const CategoryList = ({ categories, onPress }: IProps) => {
+const CategoryList = ({ categories, onPress, keyId }: IProps) => {
   return (
     <>
       <FlatList
+        listKey={`CategoryWordList-${keyId}`}
         data={categories}
         renderItem={({ item }) => {
           if (!onPress) {
@@ -18,7 +20,7 @@ const CategoryList = ({ categories, onPress }: IProps) => {
           }
           return <Text onPress={() => onPress(item)}>{item.name}</Text>;
         }}
-        keyExtractor={(item) => item.name!}
+        keyExtractor={(item) => item.name}
       />
     </>
   );
