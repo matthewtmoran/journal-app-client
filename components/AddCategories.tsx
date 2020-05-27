@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import ICategory from "../interfaces/ICategory";
-import { FlatList, View, Text, Button } from "react-native";
+import { View, Text, Button } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import gql from "graphql-tag";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import CategoryList from "./CategoryList";
+import filterUsedCategories from "../utils/filterUsedCategories";
 
 interface IProps {
   categories: ICategory[];
@@ -37,32 +38,47 @@ const AddCategories = ({ categories, onAddCategory }: IProps) => {
 
   // filter categories that are already selected
   const userCategories = !loading
-    ? data.categories.filter((cat: ICategory) => {
-        const exists = categories.find((c) => {
-          return c.id === cat.id;
-        });
-        return !exists;
-      })
+    ? filterUsedCategories(categories, data.categories)
     : [];
 
   const handleAddCategory = (category?: ICategory) => {
+    // if user pressed an existing category
     if (category) {
-      return onAddCategory(category);
+      const { name, color, id } = category;
+      return onAddCategory({ id, name, color });
     }
-    onAddCategory({ name, color: "#333" });
+
+    // if user typed in a category
+    // determin if category already exists
+    const exists = data.categories.find((cat: ICategory) => {
+      return name === cat.name;
+    });
+
+    // if it does not exist create a new category
+    if (!exists) {
+      onAddCategory({ name, color: "#333" });
+    } else {
+      // if it does exists pass all values
+      const { id, name, color } = exists;
+      onAddCategory({ id, name, color });
+    }
     setName("");
   };
 
   return (
     <View>
       <Text>Assigned Categories</Text>
-      <CategoryList categories={categories} />
+      <CategoryList categories={categories} keyId={"AssignedCategories"} />
 
       <Text>User's Categories</Text>
       {loading ? (
         <Text>Loading Categories...</Text>
       ) : (
-        <CategoryList categories={userCategories} onPress={handleAddCategory} />
+        <CategoryList
+          categories={userCategories}
+          onPress={handleAddCategory}
+          keyId={"UserCategories"}
+        />
       )}
 
       <Text>Add New Category</Text>

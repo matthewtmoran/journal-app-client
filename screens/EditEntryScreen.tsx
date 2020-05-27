@@ -1,22 +1,15 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { format } from "date-fns";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  NativeSyntheticEvent,
-  TextInputChangeEventData,
-  Button,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import gql from "graphql-tag";
 import { ENTRIES_QUERY } from "../components/RecentEntries";
-import AddCategories from "../components/AddCategories";
+import AddCategories, { CATEGORIES_QUERY } from "../components/AddCategories";
 import * as FileSystem from "expo-file-system";
 import IParams from "../interfaces/IParams";
+import filterDuplicateCategories from "../utils/filterDuplicateCategories";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
@@ -65,6 +58,7 @@ const CREATE_ENTRY_MUTATION = gql`
       title
       description
       createdAt
+      updatedAt
       imagePath
       audioPath
       body
@@ -101,8 +95,20 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
 
     createEntry({
       variables: { title, body, description, audioPath, audioFile, categories },
-      update: (cache, { data: { createEntry } }) => {
+      update: (cache, { data: { createEntry } }: any) => {
         const data: any = cache.readQuery({ query: ENTRIES_QUERY });
+        const categoryData: any = cache.readQuery({ query: CATEGORIES_QUERY });
+
+        cache.writeQuery({
+          query: CATEGORIES_QUERY,
+          data: {
+            categories: filterDuplicateCategories(
+              categoryData.categories,
+              createEntry.categories
+            ),
+          },
+        });
+
         cache.writeQuery({
           query: ENTRIES_QUERY,
           data: { entries: [...data.entries, createEntry] },
@@ -113,7 +119,11 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
 
   const handleAddCategory = (category: ICategory) => {
     setCategories((currentCategories: ICategory[]) => {
-      return [...currentCategories, category];
+      const set = new Set([...currentCategories, category]);
+
+      //@ts-ignore
+      const deDuped = [...set];
+      return deDuped;
     });
   };
 

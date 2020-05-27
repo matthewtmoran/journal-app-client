@@ -1,9 +1,9 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
-
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import EntryPreview from "./EntryPreview";
+import { RobotLightText } from "./StyledText";
 
 export const ENTRIES_QUERY = gql`
   query EntiesQuery {
@@ -15,6 +15,7 @@ export const ENTRIES_QUERY = gql`
       audioPath
       body
       createdAt
+      updatedAt
       categories {
         id
         name
@@ -28,14 +29,16 @@ const RecentEntries = () => {
   const { loading, error, data } = useQuery(ENTRIES_QUERY, {});
   if (loading) {
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View style={styles.emptyContainer}>
+        <RobotLightText style={styles.message}>
+          No recent entries.
+        </RobotLightText>
       </View>
     );
   }
   if (error) {
     return (
-      <View>
+      <View style={styles.emptyContainer}>
         <Text>{`Error: ${error.message}`}</Text>
       </View>
     );
@@ -48,15 +51,26 @@ const RecentEntries = () => {
     .slice(data.entries.length - 4, data.entries.length);
 
   return (
-    <View>
-      <Text>Recent Entries</Text>
-      <FlatList
-        data={recent}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <EntryPreview style={styles.item} entry={item} />
-        )}
-      />
+    <View style={styles.container}>
+      {!recent.length ? (
+        <View style={styles.emptyContainer}>
+          <RobotLightText style={styles.message}>
+            No recent entries.
+          </RobotLightText>
+        </View>
+      ) : (
+        <FlatList
+          listKey="RecentEntries"
+          style={styles.entries}
+          data={recent}
+          keyExtractor={(item) => item.id}
+          horizontal={false}
+          numColumns={2}
+          renderItem={({ item, index }: any) => (
+            <EntryPreview entry={item} index={index} />
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -65,6 +79,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 22,
+  },
+  emptyContainer: {
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  message: {
+    fontStyle: "italic",
+  },
+  entries: {
+    margin: 10,
   },
   item: {
     padding: 10,

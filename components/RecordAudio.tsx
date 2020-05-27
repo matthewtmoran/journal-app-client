@@ -143,8 +143,6 @@ const RecordAudioContainer = ({ navigation }: any) => {
       const rec = new Audio.Recording();
       await rec.prepareToRecordAsync(recordingOptions);
 
-      console.log({ rec });
-
       recording.current = rec;
       await recording.current.startAsync();
 
