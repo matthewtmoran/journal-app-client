@@ -18,6 +18,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 18,
   },
+  textAreaContainer: {
+    borderColor: "#c4c4c4",
+    padding: 5,
+    borderWidth: 2,
+    borderRadius: 4,
+  },
+  textArea: {
+    height: 125,
+    justifyContent: "flex-start",
+    textAlignVertical: "top",
+    fontSize: 16,
+  },
   label: {
     color: "#333",
     fontSize: 16,
@@ -36,7 +48,6 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     marginHorizontal: 0,
-    // paddingHorizontal: 0,
     width: "auto",
   },
   errorText: {
