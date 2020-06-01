@@ -1,6 +1,7 @@
 import React from "react";
-import { FlatList, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import ICategory from "../interfaces/ICategory";
+import CategoryButton from "./CategoryButton";
 
 interface IProps {
   categories: ICategory[];
@@ -10,20 +11,23 @@ interface IProps {
 
 const CategoryList = ({ categories, onPress, keyId }: IProps) => {
   return (
-    <>
-      <FlatList
-        listKey={`CategoryWordList-${keyId}`}
-        data={categories}
-        renderItem={({ item }) => {
-          if (!onPress) {
-            return <Text>{item.name}</Text>;
-          }
-          return <Text onPress={() => onPress(item)}>{item.name}</Text>;
-        }}
-        keyExtractor={(item) => item.name}
-      />
-    </>
+    <View style={styles.container}>
+      {categories.map((item) => {
+        if (!onPress) {
+          return <CategoryButton category={item} />;
+        }
+        return <Text onPress={() => onPress(item)}>{item.name}</Text>;
+      })}
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    margin: 16,
+  },
+});
 
 export default CategoryList;

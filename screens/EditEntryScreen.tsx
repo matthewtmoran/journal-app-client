@@ -10,6 +10,7 @@ import AddCategories, { CATEGORIES_QUERY } from "../components/AddCategories";
 import * as FileSystem from "expo-file-system";
 import IParams from "../interfaces/IParams";
 import filterDuplicateCategories from "../utils/filterDuplicateCategories";
+import commonStyles from "../style/common";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
@@ -146,9 +147,9 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
         />
         <View>
           <Text>Body</Text>
-          <View style={styles.textAreaContainer}>
+          <View style={commonStyles.textAreaContainer}>
             <TextInput
-              style={styles.textArea}
+              style={commonStyles.textArea}
               placeholder="Body"
               numberOfLines={5}
               onChangeText={(text: string) => setBody(text)}
@@ -157,9 +158,9 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
         </View>
         <View>
           <Text>Description</Text>
-          <View style={styles.textAreaContainer}>
+          <View style={commonStyles.textAreaContainer}>
             <TextInput
-              style={styles.textArea}
+              style={commonStyles.textArea}
               placeholder="Description"
               numberOfLines={5}
               multiline={true}
@@ -189,22 +190,10 @@ const styles = StyleSheet.create({
     borderBottomColor: "#2196f3",
     margin: 10,
   },
-  textAreaContainer: {
-    borderColor: "#2196f3",
-    padding: 5,
-    borderWidth: 2,
-  },
-  textArea: {
-    height: 125,
-    justifyContent: "flex-start",
-    textAlignVertical: "top",
-  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
     paddingTop: 40,
-    // alignItems: 'center',
-    // justifyContent: 'center',
   },
 });
 

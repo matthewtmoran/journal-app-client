@@ -8,6 +8,7 @@ interface IEntry {
   imagePath: string;
   audioPath: string;
   updatedAt: string;
+  createdAt: string;
 }
 
 export default IEntry;
