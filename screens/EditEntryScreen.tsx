@@ -110,6 +110,14 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
     });
   };
 
+  const handleRemoveCategory = (category: ICategory) => {
+    setCategories((currentCategories: ICategory[]) => {
+      return currentCategories.filter((cat) => {
+        return cat.name !== category.name;
+      });
+    });
+  };
+
   const handleAddCategory = (category: ICategory) => {
     setCategories((currentCategories: ICategory[]) => {
       const set = new Set([...currentCategories, category]);
@@ -136,6 +144,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
         <CategoriesContainer
           categories={categories}
           onAddCategory={handleAddCategory}
+          onRemoveCategory={handleRemoveCategory}
         />
         <View>
           <Text>Body</Text>

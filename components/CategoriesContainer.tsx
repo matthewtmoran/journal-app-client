@@ -13,6 +13,7 @@ import CreateCategoryModal from "./CreateCategoryModal";
 interface IProps {
   categories: ICategory[];
   onAddCategory(category: ICategory): void;
+  onRemoveCategory(category: ICategory): void;
 }
 
 export const CATEGORIES_QUERY = gql`
@@ -25,14 +26,13 @@ export const CATEGORIES_QUERY = gql`
   }
 `;
 
-const CategoriesContainer = ({ categories, onAddCategory }: IProps) => {
+const CategoriesContainer = ({
+  categories,
+  onAddCategory,
+  onRemoveCategory,
+}: IProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { loading, error, data } = useQuery(CATEGORIES_QUERY);
-
-  // filter categories that are already selected
-  const userCategories = !loading
-    ? filterUsedCategories(categories, data.categories)
-    : [];
 
   const handleAddNewCategory = ({ name, color }: ICategory) => {
     const exists = data.categories.find((cat: ICategory) => {
@@ -57,7 +57,7 @@ const CategoriesContainer = ({ categories, onAddCategory }: IProps) => {
       <CategoryList
         categories={userCategories}
         onPress={onAddCategory}
-        keyId={"UserCategories"}
+        isAddButton={true}
       />
     );
   };
@@ -68,13 +68,30 @@ const CategoriesContainer = ({ categories, onAddCategory }: IProps) => {
     });
   };
 
+  const handleRemoveCategory = (category: ICategory) => {
+    if (category.id) {
+    }
+
+    // if it's a newly create category, remove from list and forget about it
+    // if its a user category, remove from list and make ure it's back in the user list category
+  };
+
+  // filter categories that are already selected
+  const userCategories = !loading
+    ? filterUsedCategories(categories, data.categories)
+    : [];
+
   return (
     <View style={commonStyles.section}>
       <RobotText style={{ ...commonStyles.label, ...styles.label }}>
         Categories
       </RobotText>
       {categories.length > 0 ? (
-        <CategoryList categories={categories} keyId={"AssignedCategories"} />
+        <CategoryList
+          categories={categories}
+          isAddButton={false}
+          onPress={onRemoveCategory}
+        />
       ) : (
         <RobotLightText style={commonStyles.message}>
           No Categories
