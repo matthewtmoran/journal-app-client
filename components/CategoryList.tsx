@@ -16,7 +16,7 @@ const CategoryList = ({ categories, onPress, keyId }: IProps) => {
         if (!onPress) {
           return <CategoryButton category={item} />;
         }
-        return <Text onPress={() => onPress(item)}>{item.name}</Text>;
+        return <CategoryButton category={item} onPress={() => onPress(item)} />;
       })}
     </View>
   );
@@ -25,6 +25,7 @@ const CategoryList = ({ categories, onPress, keyId }: IProps) => {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
+    flexWrap: "wrap",
     flexDirection: "row",
     margin: 16,
   },

@@ -6,7 +6,9 @@ import { StyleSheet, Text, TextInput, View, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import gql from "graphql-tag";
 import { ENTRIES_QUERY } from "../components/RecentEntries";
-import AddCategories, { CATEGORIES_QUERY } from "../components/AddCategories";
+import CategoriesContainer, {
+  CATEGORIES_QUERY,
+} from "../components/CategoriesContainer";
 import * as FileSystem from "expo-file-system";
 import IParams from "../interfaces/IParams";
 import filterDuplicateCategories from "../utils/filterDuplicateCategories";
@@ -24,16 +26,6 @@ interface IEditEntryScreen {
 interface ICategory {
   name: string;
   color: string;
-}
-
-interface ICreateEntryInput {
-  title: string;
-  body: string;
-  description: string;
-  categories: ICategory[];
-  imagePath: string;
-  audioFile: string;
-  audioPath: string;
 }
 
 const CREATE_ENTRY_MUTATION = gql`
@@ -129,19 +121,19 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
   };
 
   return (
-    <View>
+    <View style={commonStyles.container}>
       <ScrollView>
-        <Text>Edit Entry</Text>
+        <Text style={commonStyles.title}>Edit Entry</Text>
         <View>
-          <Text>Title</Text>
+          <Text style={commonStyles.label}>Title</Text>
           <TextInput
             placeholder="Title"
-            style={styles.input}
+            style={commonStyles.input}
             defaultValue={date}
             onChangeText={(text: string) => setTitle(text)}
           />
         </View>
-        <AddCategories
+        <CategoriesContainer
           categories={categories}
           onAddCategory={handleAddCategory}
         />

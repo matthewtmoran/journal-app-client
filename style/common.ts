@@ -1,6 +1,12 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    marginHorizontal: 16,
+    marginVertical: 0,
+  },
   title: {
     color: "#333",
     margin: 10,
@@ -55,6 +61,14 @@ const styles = StyleSheet.create({
     color: "red",
     marginHorizontal: 12,
     marginVertical: 0,
+  },
+  message: {
+    fontStyle: "italic",
+    textAlign: "center",
+    margin: 20,
+  },
+  section: {
+    marginVertical: 20,
   },
 });
 
