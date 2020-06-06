@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { format } from "date-fns";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
@@ -17,6 +17,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import SecondaryButton from "../components/SecondaryButton";
 import { RobotText } from "../components/StyledText";
+import LoadingModal from "../components/LoadingModal";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
@@ -84,6 +85,7 @@ const CREATE_ENTRY_MUTATION = gql`
 `;
 
 const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { audioPath } = route.params;
   const date = format(Date.now(), "yyyyMMddHHmm");
   const initialValues: IFormValues = {
@@ -95,6 +97,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
 
   const [createEntry, createEntryEvents] = useMutation(CREATE_ENTRY_MUTATION, {
     onCompleted(data) {
+      setIsLoading(false);
       navigation.navigate("Home");
     },
     onError(error) {
@@ -108,6 +111,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
     description,
     categories,
   }: IFormValues) => {
+    setIsLoading(true);
     const audioFile: string = await FileSystem.readAsStringAsync(audioPath, {
       encoding: FileSystem.EncodingType.Base64,
     });
@@ -180,6 +184,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
             return (
               <View>
                 {/* title section */}
+                <LoadingModal isModalVisible={isLoading} />
                 <View style={commonStyles.section}>
                   <RobotText style={{ ...commonStyles.label, ...styles.label }}>
                     Title
