@@ -68,14 +68,6 @@ const CategoriesContainer = ({
     });
   };
 
-  const handleRemoveCategory = (category: ICategory) => {
-    if (category.id) {
-    }
-
-    // if it's a newly create category, remove from list and forget about it
-    // if its a user category, remove from list and make ure it's back in the user list category
-  };
-
   // filter categories that are already selected
   const userCategories = !loading
     ? filterUsedCategories(categories, data.categories)

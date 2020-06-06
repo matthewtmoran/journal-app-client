@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { format } from "date-fns";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
-import { StyleSheet, Text, TextInput, View, Button } from "react-native";
+import { StyleSheet, TextInput, View, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import gql from "graphql-tag";
 import { ENTRIES_QUERY } from "../components/RecentEntries";
@@ -13,6 +13,10 @@ import * as FileSystem from "expo-file-system";
 import IParams from "../interfaces/IParams";
 import filterDuplicateCategories from "../utils/filterDuplicateCategories";
 import commonStyles from "../style/common";
+import { Formik } from "formik";
+import * as yup from "yup";
+import SecondaryButton from "../components/SecondaryButton";
+import { RobotText } from "../components/StyledText";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
@@ -26,6 +30,21 @@ interface IEditEntryScreen {
 interface ICategory {
   name: string;
   color: string;
+}
+
+const schema = yup.object().shape({
+  title: yup.string().required("Required"),
+  description: yup.string(),
+  categories: yup
+    .array()
+    .of(yup.object().shape({ name: yup.string(), color: yup.string() })),
+});
+
+interface IFormValues {
+  body: string;
+  description: string;
+  title: string;
+  categories: ICategory[];
 }
 
 const CREATE_ENTRY_MUTATION = gql`
@@ -65,12 +84,14 @@ const CREATE_ENTRY_MUTATION = gql`
 `;
 
 const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
-  const date = format(Date.now(), "yyyyMMddHHmm");
   const { audioPath } = route.params;
-  const [title, setTitle] = useState(date);
-  const [body, setBody] = useState("");
-  const [description, setDescription] = useState("");
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const date = format(Date.now(), "yyyyMMddHHmm");
+  const initialValues: IFormValues = {
+    body: "",
+    description: "",
+    title: `Untitled-${date}`,
+    categories: [],
+  };
 
   const [createEntry, createEntryEvents] = useMutation(CREATE_ENTRY_MUTATION, {
     onCompleted(data) {
@@ -81,7 +102,12 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
     },
   });
 
-  const handleSave = async () => {
+  const handleSave = async ({
+    title,
+    body,
+    description,
+    categories,
+  }: IFormValues) => {
     const audioFile: string = await FileSystem.readAsStringAsync(audioPath, {
       encoding: FileSystem.EncodingType.Base64,
     });
@@ -110,75 +136,103 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
     });
   };
 
-  const handleRemoveCategory = (category: ICategory) => {
-    setCategories((currentCategories: ICategory[]) => {
-      return currentCategories.filter((cat) => {
-        return cat.name !== category.name;
-      });
-    });
-  };
-
-  const handleAddCategory = (category: ICategory) => {
-    setCategories((currentCategories: ICategory[]) => {
-      const set = new Set([...currentCategories, category]);
-
-      //@ts-ignore
-      const deDuped = [...set];
-      return deDuped;
-    });
-  };
-
   return (
     <View style={commonStyles.container}>
       <ScrollView>
-        <Text style={commonStyles.title}>Edit Entry</Text>
-        <View>
-          <Text style={commonStyles.label}>Title</Text>
-          <TextInput
-            placeholder="Title"
-            style={commonStyles.input}
-            defaultValue={date}
-            onChangeText={(text: string) => setTitle(text)}
-          />
-        </View>
-        <CategoriesContainer
-          categories={categories}
-          onAddCategory={handleAddCategory}
-          onRemoveCategory={handleRemoveCategory}
-        />
-        <View>
-          <Text>Body</Text>
-          <View style={commonStyles.textAreaContainer}>
-            <TextInput
-              style={commonStyles.textArea}
-              placeholder="Body"
-              numberOfLines={5}
-              onChangeText={(text: string) => setBody(text)}
-            />
-          </View>
-        </View>
-        <View>
-          <Text>Description</Text>
-          <View style={commonStyles.textAreaContainer}>
-            <TextInput
-              style={commonStyles.textArea}
-              placeholder="Description"
-              numberOfLines={5}
-              multiline={true}
-              onChangeText={(text: string) => setDescription(text)}
-            />
-          </View>
-        </View>
-        <View>
-          <Text>Audio File</Text>
-          <TextInput
-            placeholder="Audio Path"
-            style={styles.input}
-            editable={false}
-            defaultValue={audioPath}
-          />
-        </View>
-        <Button title="Save" onPress={handleSave} />
+        <Formik
+          validationSchema={schema}
+          initialValues={initialValues}
+          onSubmit={(values) => {
+            handleSave(values);
+          }}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            values,
+          }) => {
+            // set the header options
+            useLayoutEffect(() => {
+              navigation.setOptions({
+                headerTitle: "Save Entry",
+                headerRight: () => (
+                  <SecondaryButton onPress={handleSubmit}>Save</SecondaryButton>
+                ),
+              });
+            });
+
+            const handleAddCategory = (category: ICategory) => {
+              const set = new Set([...values.categories, category]);
+              // @ts-ignore
+              const deDuped = [...set];
+              setFieldValue("categories", deDuped);
+            };
+
+            const handleRemoveCategory = (category: ICategory) => {
+              const cats = values.categories.filter((cat) => {
+                return cat.name !== category.name;
+              });
+              setFieldValue("categories", cats);
+            };
+
+            return (
+              <View>
+                {/* title section */}
+                <View style={commonStyles.section}>
+                  <RobotText style={{ ...commonStyles.label, ...styles.label }}>
+                    Title
+                  </RobotText>
+                  <TextInput
+                    defaultValue={values.title}
+                    onBlur={handleBlur("title")}
+                    onChangeText={handleChange("title")}
+                    placeholder="Title"
+                    style={commonStyles.input}
+                    value={values.title}
+                  />
+                </View>
+                <CategoriesContainer
+                  categories={values.categories}
+                  onAddCategory={handleAddCategory}
+                  onRemoveCategory={handleRemoveCategory}
+                />
+                {/* description section */}
+                <View style={commonStyles.section}>
+                  <RobotText style={{ ...commonStyles.label, ...styles.label }}>
+                    Description
+                  </RobotText>
+                  <View style={commonStyles.textAreaContainer}>
+                    <TextInput
+                      style={commonStyles.textArea}
+                      placeholder="Description"
+                      numberOfLines={5}
+                      multiline={true}
+                      onBlur={handleBlur("description")}
+                      onChangeText={handleChange("description")}
+                    />
+                  </View>
+                </View>
+                {/* body section */}
+                <View style={commonStyles.section}>
+                  <RobotText style={{ ...commonStyles.label, ...styles.label }}>
+                    Body
+                  </RobotText>
+                  <View style={commonStyles.textAreaContainer}>
+                    <TextInput
+                      style={commonStyles.textArea}
+                      placeholder="Body"
+                      numberOfLines={5}
+                      onBlur={handleBlur("body")}
+                      onChangeText={handleChange("body")}
+                    />
+                  </View>
+                </View>
+              </View>
+            );
+          }}
+        </Formik>
       </ScrollView>
     </View>
   );
@@ -195,6 +249,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     paddingTop: 40,
+  },
+  label: {
+    fontSize: 18,
   },
 });
 

@@ -105,11 +105,11 @@ const CreateCategoryModal = ({
 
               <View style={styles.section}>
                 <RobotText style={{ ...commonStyles.label, ...styles.label }}>
-                  Enter Title
+                  Enter Name
                 </RobotText>
                 <TextInput
                   onChangeText={handleChange("name")}
-                  onBlur={handleBlur("email")}
+                  onBlur={handleBlur("name")}
                   style={commonStyles.input}
                   value={values.name}
                   placeholder="Name"
