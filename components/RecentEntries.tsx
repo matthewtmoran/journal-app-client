@@ -1,15 +1,23 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
-
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
+import EntryPreview from "./EntryPreview";
+import { RobotLightText } from "./StyledText";
 
-const ENTRIES_QUERY = gql`
+export const ENTRIES_QUERY = gql`
   query EntiesQuery {
     entries {
       id
       title
+      description
+      imagePath
+      audioPath
+      body
+      createdAt
+      updatedAt
       categories {
+        id
         name
         color
       }
@@ -17,30 +25,52 @@ const ENTRIES_QUERY = gql`
   }
 `;
 
-const RecentEntries: FunctionComponent = () => {
+const RecentEntries = () => {
   const { loading, error, data } = useQuery(ENTRIES_QUERY, {});
   if (loading) {
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View style={styles.emptyContainer}>
+        <RobotLightText style={styles.message}>
+          No recent entries.
+        </RobotLightText>
       </View>
     );
   }
   if (error) {
     return (
-      <View>
+      <View style={styles.emptyContainer}>
         <Text>{`Error: ${error.message}`}</Text>
       </View>
     );
   }
+
+  const recent = data.entries
+    .sort((a: any, b: any) => {
+      return Number(new Date(a.createdAt)) - Number(new Date(b.createdAt));
+    })
+    .slice(data.entries.length - 4, data.entries.length);
+
   return (
-    <View>
-      <Text>Recent Entries</Text>
-      <FlatList
-        data={data.entries}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text style={styles.item}>{item.title}</Text>}
-      />
+    <View style={styles.container}>
+      {!recent.length ? (
+        <View style={styles.emptyContainer}>
+          <RobotLightText style={styles.message}>
+            No recent entries.
+          </RobotLightText>
+        </View>
+      ) : (
+        <FlatList
+          listKey="RecentEntries"
+          style={styles.entries}
+          data={recent}
+          keyExtractor={(item) => item.id}
+          horizontal={false}
+          numColumns={2}
+          renderItem={({ item, index }: any) => (
+            <EntryPreview entry={item} index={index} />
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -49,6 +79,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 22,
+  },
+  emptyContainer: {
+    flex: 1,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  message: {
+    fontStyle: "italic",
+  },
+  entries: {
+    margin: 10,
   },
   item: {
     padding: 10,

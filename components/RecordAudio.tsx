@@ -1,7 +1,10 @@
-import React, { useRef, useReducer, useEffect } from "react";
-import { View, Button } from "react-native";
+import React, { useRef, useReducer, useEffect, useState } from "react";
+import { Text, Button, Easing } from "react-native";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
+import { View, StyleSheet, TouchableOpacity, Animated } from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface IState {
   isLoading: boolean;
@@ -54,8 +57,80 @@ const RECORD_AUDIO = "RECORD_AUDIO";
 const RECORDING = "RECORDING";
 const RECORDING_COMPLETE = "RECORDING_COMPLETE";
 
+const recordingOptions = {
+  // android not currently in use, but parameters are required
+  android: {
+    extension: ".amr",
+    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB,
+    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
+    sampleRate: 8000,
+    numberOfChannels: 2,
+    bitRate: 128000,
+  },
+  ios: {
+    extension: ".wav",
+    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+    sampleRate: 44100,
+    numberOfChannels: 1,
+    bitRate: 128000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+};
+
 const RecordAudioContainer = ({ navigation }: any) => {
   const recording = useRef<Audio.Recording | null>(null);
+  const [animated] = useState(new Animated.Value(0));
+  const [opacityA] = useState(new Animated.Value(1));
+
+  const [animated2] = useState(new Animated.Value(0));
+  const [opacityA2] = useState(new Animated.Value(1));
+
+  const startAnimation = () => {
+    Animated.stagger(1, [
+      Animated.loop(
+        Animated.parallel([
+          Animated.timing(animated, {
+            toValue: 1,
+            duration: 3000,
+            easing: Easing.linear,
+          }),
+          Animated.timing(opacityA, {
+            toValue: 0,
+            duration: 3000,
+            easing: Easing.linear,
+          }),
+        ])
+      ),
+      Animated.loop(
+        Animated.parallel([
+          Animated.timing(animated2, {
+            toValue: 1,
+            duration: 3000,
+            easing: Easing.linear,
+          }),
+          Animated.timing(opacityA2, {
+            toValue: 0,
+            duration: 3000,
+            easing: Easing.linear,
+          }),
+        ])
+      ),
+    ]).start();
+  };
+
+  const stopAnimation = () => {
+    animated.stopAnimation();
+    animated2.stopAnimation();
+    opacityA.stopAnimation();
+    opacityA2.stopAnimation();
+  };
+
+  useEffect(() => {
+    () => stopAnimation();
+  }, []);
+
   const [state, dispatch] = useReducer((prevState: IState, action: any) => {
     switch (action.type) {
       case RECORDING_COMPLETE:
@@ -82,6 +157,7 @@ const RecordAudioContainer = ({ navigation }: any) => {
     if (state.isRecording) {
       finishRecording();
     } else {
+      startAnimation();
       recordAudio();
     }
   };
@@ -119,7 +195,7 @@ const RecordAudioContainer = ({ navigation }: any) => {
     }
     try {
       const rec = new Audio.Recording();
-      await rec.prepareToRecordAsync(recordingSettings);
+      await rec.prepareToRecordAsync(recordingOptions);
 
       recording.current = rec;
       await recording.current.startAsync();
@@ -132,32 +208,110 @@ const RecordAudioContainer = ({ navigation }: any) => {
 
   const finishRecording = async () => {
     dispatch({ type: RECORDING_COMPLETE });
+    stopAnimation();
 
     try {
       await recording.current?.stopAndUnloadAsync();
+      const originalLocation = recording.current?.getURI();
+
+      if (!originalLocation) {
+        throw new Error("Something went wrong with the recording");
+      }
+
+      const info = await FileSystem.getInfoAsync(originalLocation);
+      console.log(`FILE INFO: ${JSON.stringify(info, null, 2)}`);
+
+      const toLocation =
+        FileSystem.documentDirectory + `untitled-${info.modificationTime}.m4a`;
+
+      FileSystem.moveAsync({
+        from: originalLocation as string,
+        to: toLocation,
+      });
+
+      navigation.navigate("EditEntry", { audioPath: toLocation });
     } catch (error) {
       console.log({ error });
     }
-
-    const info = await FileSystem.getInfoAsync(
-      recording.current?.getURI() || ""
-    );
-    console.log("path:", info.uri);
-
-    navigation.navigate("EditEntry", { audioPath: info.uri });
-
-    console.log(`FILE INFO: ${JSON.stringify(info, null, 2)}`);
   };
 
   return (
-    <>
-      <Button
-        color={state.isRecording ? "red" : "blue"}
-        title={`${state.isRecording ? "Stop" : "Record"}`}
-        onPress={handleRecord}
-      />
-    </>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleRecord}>
+        <Animated.View
+          style={{
+            ...styles.animatedSytles,
+            opacity: opacityA,
+            transform: [
+              {
+                scale: animated,
+              },
+            ],
+            ...(state.isRecording
+              ? { backgroundColor: "rgba(153,0,0,0.4)" }
+              : {}),
+          }}
+        >
+          <Animated.View
+            style={{
+              ...styles.animatedSytles,
+              opacity: opacityA2,
+              transform: [
+                {
+                  scale: animated2,
+                },
+              ],
+              ...(state.isRecording
+                ? { backgroundColor: "rgba(153,0,0,0.4)" }
+                : {}),
+            }}
+          />
+        </Animated.View>
+        <FontAwesome
+          name="microphone"
+          size={100}
+          color={state.isRecording ? "rgb(153,0,0)" : "green"}
+        />
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  buttonContainer: {
+    borderWidth: 5,
+    borderColor: "#c4c4c4",
+    borderRadius: 100,
+    height: 200,
+    width: 200,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  animatedSytles: {
+    position: "absolute",
+    borderRadius: 100,
+    height: 200,
+    width: 200,
+  },
+  icon: {},
+  button: {
+    backgroundColor: "#fff",
+    borderRadius: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    width: 120,
+  },
+  buttonText: {
+    textAlign: "center",
+    color: "#144568",
+    fontSize: 18,
+  },
+});
 
 export default RecordAudioContainer;
