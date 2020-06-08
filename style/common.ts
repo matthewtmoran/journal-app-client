@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: "#333",
-    fontSize: 16,
+    fontSize: 18,
     marginHorizontal: 10,
     marginVertical: 5,
   },
@@ -69,6 +69,12 @@ const styles = StyleSheet.create({
   },
   section: {
     marginVertical: 20,
+  },
+  categoryCircle: {
+    height: 16,
+    width: 16,
+    margin: 2,
+    borderRadius: 100,
   },
 });
 

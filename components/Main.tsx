@@ -121,7 +121,7 @@ export default function Main({ navigation }: any) {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <Stack.Navigator>
+      <Stack.Navigator headerMode="screen">
         {state.userToken === null ? (
           // No token found, user isn't signed in
           <>

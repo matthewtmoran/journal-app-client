@@ -8,6 +8,7 @@ export default {
       screens: {
         Home: "home",
         Links: "links",
+        Search: "search",
         EditEntry: "edit-entry",
       },
     },
