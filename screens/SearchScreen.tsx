@@ -93,7 +93,7 @@ const SearchScreen = ({ onFocus }: any) => {
     inputTextValue.length < 1 && cateogryFilter.length < 1 && !timeFilter;
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <TextInput
         ref={inputRef}
         onChangeText={(text) => setInputTextValue(text)}
@@ -212,7 +212,7 @@ const SearchScreen = ({ onFocus }: any) => {
           timeFilter={timeFilter}
         ></EntryList>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
