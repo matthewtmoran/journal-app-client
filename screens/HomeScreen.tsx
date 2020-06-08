@@ -18,7 +18,6 @@ import {
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 
 import { MonoText } from "../components/StyledText";
-import { AuthContext } from "../components/Main";
 import RecentEntries from "../components/RecentEntries";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
@@ -26,6 +25,7 @@ import RecordAudioContainer from "../components/RecordAudio";
 import SearchInput from "../components/SearchInput";
 import commonStyles from "../style/common";
 import { useFocusEffect } from "@react-navigation/native";
+import AuthContext from "../state/auth-context";
 
 export default function HomeScreen({ navigation }: any) {
   const { signOut } = React.useContext(AuthContext);

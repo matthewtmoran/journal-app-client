@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput, Button } from "react-native";
-import { AuthContext } from "../components/Main";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
 import CardView from "../components/CardView";
 import PrimaryButton from "../components/PrimaryButton";
@@ -11,6 +10,7 @@ import CommonStyles from "../style/common";
 import * as yup from "yup";
 import { Formik } from "formik";
 import ICredentials from "../interfaces/ICredentials";
+import AuthContext from "../state/auth-context";
 
 interface ISignInScreenNavigationProps
   extends NavigationProp<IParams, "SignInScreen"> {}

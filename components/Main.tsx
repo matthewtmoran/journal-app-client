@@ -1,18 +1,17 @@
 import React, { useReducer, createContext, useEffect, useMemo } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { createStackNavigator } from "@react-navigation/stack";
+import gql from "graphql-tag";
+import { AsyncStorage, Text } from "react-native";
 
 import BottomTabNavigator from "../navigation/BottomTabNavigator";
 import SignUpScreen from "../screens/SignupScreen";
 import SignInScreen from "../screens/SignInScreen";
 import { AUTH_TOKEN } from "../constants";
-import gql from "graphql-tag";
-import { AsyncStorage } from "react-native";
 import EditEntryScreen from "../screens/EditEntryScreen";
 import EntryDetailsScreen from "../screens/EntryDetailsScreen";
 import ICredentials from "../interfaces/ICredentials";
-
-export const AuthContext = createContext<any>(undefined);
+import AuthContext from "../state/auth-context";
 
 const Stack = createStackNavigator();
 

@@ -1,15 +1,16 @@
 import React, { useRef } from "react";
 import { NavigationProp } from "@react-navigation/native";
-import { Text, StyleSheet, View, TextInput, Button } from "react-native";
-import { AuthContext } from "../components/Main";
-import { RobotBoldText, RobotLightText } from "../components/StyledText";
+import { Text, StyleSheet, View, TextInput } from "react-native";
+import * as yup from "yup";
+import { Formik } from "formik";
+
+import IParams from "../interfaces/IParams";
 import CardView from "../components/CardView";
 import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
-import IParams from "../interfaces/IParams";
 import CommonStyles from "../style/common";
-import * as yup from "yup";
-import { Formik } from "formik";
+import { RobotBoldText, RobotLightText } from "../components/StyledText";
+import AuthContext from "../state/auth-context";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Required"),
