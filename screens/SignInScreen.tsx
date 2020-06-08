@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { NavigationProp } from "@react-navigation/native";
+import React, { useCallback, useRef } from "react";
+import { useFocusEffect, NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
 import CardView from "../components/CardView";
@@ -10,7 +10,7 @@ import CommonStyles from "../style/common";
 import * as yup from "yup";
 import { Formik } from "formik";
 import ICredentials from "../interfaces/ICredentials";
-import AuthContext from "../state/auth-context";
+import { useAuth } from "../state/auth-context";
 
 interface ISignInScreenNavigationProps
   extends NavigationProp<IParams, "SignInScreen"> {}
@@ -33,8 +33,17 @@ const initialValues: ICredentials = {
 };
 
 const SignInScreen = ({ navigation }: ISignInScreen) => {
-  const { signIn } = React.useContext(AuthContext);
+  const auth = useAuth();
   const formikRef = useRef<any>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        headerShown: false,
+      });
+      // Get StackNav navigation item
+    }, [navigation])
+  );
 
   const apiError = (error: string) => {
     formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
@@ -47,7 +56,7 @@ const SignInScreen = ({ navigation }: ISignInScreen) => {
         validationSchema={schema}
         initialValues={initialValues}
         onSubmit={(values: ICredentials) => {
-          signIn(values).catch((error: any) => {
+          auth.signIn(values).catch((error: any) => {
             apiError(error.message);
           });
         }}

@@ -15,6 +15,7 @@ import { AUTH_TOKEN } from "./constants";
 import useCachedResources from "./hooks/useCachedResources";
 import LinkingConfiguration from "./navigation/LinkingConfiguration";
 import Main from "./components/Main";
+import { AuthProvider } from "./state/auth-context";
 
 const typeDefs = gql`
   input CreateCategoryInput {
@@ -76,7 +77,9 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer linking={LinkingConfiguration}>
-        <Main />
+        <AuthProvider>
+          <Main />
+        </AuthProvider>
       </NavigationContainer>
     </ApolloProvider>
   );

@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { NavigationProp } from "@react-navigation/native";
+import React, { useCallback, useRef } from "react";
+import { useFocusEffect, NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput } from "react-native";
 import * as yup from "yup";
 import { Formik } from "formik";
@@ -10,7 +10,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import CommonStyles from "../style/common";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
-import AuthContext from "../state/auth-context";
+import { useAuth } from "../state/auth-context";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Required"),
@@ -38,8 +38,17 @@ interface ISignupScreen {
 }
 
 const SignupScreen = ({ navigation }: ISignupScreen) => {
-  const { signUp } = React.useContext(AuthContext);
+  const auth = useAuth();
   const formikRef = useRef<any>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        headerShown: false,
+      });
+      // Get StackNav navigation item
+    }, [navigation])
+  );
 
   const apiError = (error: string) => {
     formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
@@ -52,7 +61,7 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
         validationSchema={schema}
         initialValues={initialValues}
         onSubmit={(values: ICredentials) => {
-          signUp(values).catch((error: any) => {
+          auth.signUp(values).catch((error: any) => {
             apiError(error.message);
           });
         }}
