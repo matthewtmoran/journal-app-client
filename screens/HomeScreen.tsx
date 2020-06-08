@@ -1,5 +1,11 @@
 import * as WebBrowser from "expo-web-browser";
-import React, { useRef, useState, useEffect } from "react";
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import {
   Button,
   Image,
@@ -17,12 +23,28 @@ import RecentEntries from "../components/RecentEntries";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import RecordAudioContainer from "../components/RecordAudio";
+import SearchInput from "../components/SearchInput";
+import commonStyles from "../style/common";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function HomeScreen({ navigation }: any) {
   const { signOut } = React.useContext(AuthContext);
 
+  useFocusEffect(
+    useCallback(() => {
+      const stackNavigator = navigation.dangerouslyGetParent();
+      if (stackNavigator) {
+        stackNavigator.setOptions({
+          headerShown: false,
+        });
+      }
+      // Get StackNav navigation item
+    }, [navigation])
+  );
+
   return (
     <View style={styles.container}>
+      <SearchInput navigation={navigation} />
       <RecentEntries />
       <RecordAudioContainer navigation={navigation} />
       {/* <ScrollView
@@ -41,10 +63,6 @@ export default function HomeScreen({ navigation }: any) {
     </View>
   );
 }
-
-HomeScreen.navigationOptions = {
-  header: null,
-};
 
 function DevelopmentModeNotice() {
   if (__DEV__) {
@@ -83,6 +101,7 @@ function handleHelpPress() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 50,
     flex: 1,
     backgroundColor: "#fff",
   },

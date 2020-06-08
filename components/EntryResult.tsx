@@ -11,13 +11,14 @@ import {
 } from "./StyledText";
 import { format } from "date-fns";
 import commonStyles from "../style/common";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface IProps {
   entry: IEntry;
   index: number;
 }
 
-const EntryPreview = ({ entry, index }: IProps) => {
+const EntryResult = ({ entry, index }: IProps) => {
   const navigation = useNavigation();
   const handlePress = () => {
     navigation.navigate("EntryDetails", { entry });
@@ -27,22 +28,41 @@ const EntryPreview = ({ entry, index }: IProps) => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
-      <View>
+      <View style={styles.iconColumn}>
+        <FontAwesome name="microphone" size={34} color="#333" />
+      </View>
+
+      <View style={{ flexGrow: 2, flex: 2 }}>
         <RobotText numberOfLines={1} style={styles.title}>
           {entry.title}
         </RobotText>
         <RobotLightItalicText style={styles.description}>
           {updatedAt}
         </RobotLightItalicText>
-        <RobotThinItalicText numberOfLines={1} style={styles.description}>
-          {entry.description}
-        </RobotThinItalicText>
       </View>
+
+      {entry.description.length > 0 && (
+        <View
+          style={{
+            ...styles.column,
+            display: "flex",
+            flexWrap: "wrap",
+            height: "100%",
+            justifyContent: "flex-start",
+            marginHorizontal: 4,
+          }}
+        >
+          <RobotThinItalicText numberOfLines={1} style={styles.description}>
+            {entry.description}
+          </RobotThinItalicText>
+        </View>
+      )}
+
       <FlatList
-        style={styles.categories}
+        style={{ ...styles.categories, ...styles.column }}
         data={entry.categories}
         keyExtractor={(item) => item.id!}
-        listKey={`CategoryColorList-${index}`}
+        listKey={`CategoryResultList-${index}`}
         renderItem={({ item }) => {
           return (
             <View
@@ -61,28 +81,22 @@ const EntryPreview = ({ entry, index }: IProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 100,
+    flexDirection: "row",
     marginVertical: 10,
     marginHorizontal: 10,
     flex: 1,
     padding: 8,
     borderRadius: 4,
     backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   categories: {
     display: "flex",
     flexDirection: "row",
     overflow: "scroll",
+    justifyContent: "flex-end",
   },
   item: {
     padding: 10,
@@ -90,13 +104,20 @@ const styles = StyleSheet.create({
     height: 44,
   },
   title: {
-    height: 18,
-    fontSize: 16,
+    fontSize: 20,
   },
   description: {
     fontSize: 14,
     overflow: "hidden",
   },
+  iconColumn: {
+    width: 50,
+    textAlign: "center",
+    alignItems: "center",
+  },
+  column: {
+    flex: 1,
+  },
 });
 
-export default EntryPreview;
+export default EntryResult;

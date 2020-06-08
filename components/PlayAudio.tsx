@@ -148,8 +148,6 @@ const PlayAudio = ({ audioPath }: IPlayAudio) => {
 
       case UPDATE_POSITION: {
         // @ts-ignore
-        console.log("soundPosition", action.status.soundPosition);
-        // @ts-ignore
         return { ...prevState, soundPosition: action.status.soundPosition };
       }
 
