@@ -13,14 +13,15 @@ interface IProps {
 const CategoryList = ({ categories, onPress, isAddButton }: IProps) => {
   return (
     <View style={styles.container}>
-      {categories.map(({ id, name, color }) => {
+      {categories.map(({ id, name, color }, index) => {
         if (!onPress) {
-          return <CategoryButton category={{ id, name, color }} />;
+          return <CategoryButton key={index} category={{ id, name, color }} />;
         }
         return (
           <CategoryButton
             category={{ id, name, color }}
             onPress={() => onPress({ id, name, color })}
+            key={index}
           >
             <FontAwesome
               name={isAddButton ? "plus" : "minus"}
