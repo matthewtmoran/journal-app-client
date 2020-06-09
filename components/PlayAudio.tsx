@@ -183,7 +183,6 @@ const PlayAudio = ({ audioPath }: IPlayAudio) => {
   const unloadAudio = async () => {
     dispatch({ type: AUDIO_LOADING });
     if (playbackInstance.current) {
-      await playbackInstance.current.unloadAsync();
       playbackInstance.current.setOnPlaybackStatusUpdate(null);
       playbackInstance.current = null;
     }
