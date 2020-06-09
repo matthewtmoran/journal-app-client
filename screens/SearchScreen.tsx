@@ -1,21 +1,8 @@
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-} from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Button,
-  ActivityIndicator,
-} from "react-native";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { StyleSheet, TextInput, View, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { useQuery } from "@apollo/react-hooks";
 import { CATEGORIES_QUERY } from "../components/CategoriesContainer";
 import ICategory from "../interfaces/ICategory";
@@ -100,7 +87,7 @@ const SearchScreen = ({ onFocus }: any) => {
         value={inputTextValue}
         style={commonStyles.input}
         placeholder="Search"
-      ></TextInput>
+      />
 
       {/* Selected Categories */}
       <View style={styles.selectedContainer}>
@@ -210,7 +197,7 @@ const SearchScreen = ({ onFocus }: any) => {
           searchTerm={inputTextValue.toLowerCase()}
           categoryFilter={cateogryFilter}
           timeFilter={timeFilter}
-        ></EntryList>
+        />
       )}
     </View>
   );

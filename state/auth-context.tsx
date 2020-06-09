@@ -31,6 +31,7 @@ const AuthReducer = (prevState: any, action: any) => {
         userToken: action.token,
         isLoading: false,
       };
+    case SIGN_UP:
     case SIGN_IN:
       return {
         ...prevState,
@@ -74,6 +75,7 @@ const AuthProvider: React.FunctionComponent = ({ children }) => {
   const [signUp, signupEvents] = useMutation(SIGNUP_MUTATION, {
     onCompleted(data) {
       const { token } = data.createUser;
+      AsyncStorage.setItem(AUTH_TOKEN, token);
       dispatch({ type: SIGN_UP, token });
     },
     onError(error) {

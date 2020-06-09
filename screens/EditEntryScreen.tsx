@@ -1,23 +1,24 @@
 import React, { useState, useLayoutEffect } from "react";
+import * as FileSystem from "expo-file-system";
 import { useMutation } from "@apollo/react-hooks";
 import { format } from "date-fns";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import { StyleSheet, TextInput, View, Button } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import gql from "graphql-tag";
-import { ENTRIES_QUERY } from "../components/RecentEntries";
-import CategoriesContainer, {
-  CATEGORIES_QUERY,
-} from "../components/CategoriesContainer";
-import * as FileSystem from "expo-file-system";
-import IParams from "../interfaces/IParams";
-import filterDuplicateCategories from "../utils/filterDuplicateCategories";
-import commonStyles from "../style/common";
 import { Formik } from "formik";
 import * as yup from "yup";
+
+import IParams from "../interfaces/IParams";
 import SecondaryButton from "../components/SecondaryButton";
 import { RobotText } from "../components/StyledText";
 import LoadingModal from "../components/LoadingModal";
+import CategoriesContainer, {
+  CATEGORIES_QUERY,
+} from "../components/CategoriesContainer";
+import { ENTRIES_QUERY } from "../queries/queries";
+import { CREATE_ENTRY_MUTATION } from "../queries/mutations";
+import commonStyles from "../style/common";
+import filterDuplicateCategories from "../utils/filterDuplicateCategories";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
@@ -47,42 +48,6 @@ interface IFormValues {
   title: string;
   categories: ICategory[];
 }
-
-const CREATE_ENTRY_MUTATION = gql`
-  mutation CreateEntryMutation(
-    $title: String!
-    $body: String
-    $description: String
-    $audioPath: String
-    $audioFile: String
-    $categories: [CreateCategoryInput!]
-  ) {
-    createEntry(
-      data: {
-        title: $title
-        body: $body
-        description: $description
-        audioPath: $audioPath
-        audioFile: $audioFile
-        categories: $categories
-      }
-    ) {
-      id
-      title
-      description
-      createdAt
-      updatedAt
-      imagePath
-      audioPath
-      body
-      categories {
-        id
-        name
-        color
-      }
-    }
-  }
-`;
 
 const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
   const [isLoading, setIsLoading] = useState(false);

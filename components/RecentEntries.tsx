@@ -1,29 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import EntryPreview from "./EntryPreview";
 import { RobotLightText } from "./StyledText";
-
-export const ENTRIES_QUERY = gql`
-  query EntiesQuery {
-    entries {
-      id
-      title
-      description
-      imagePath
-      audioPath
-      body
-      createdAt
-      updatedAt
-      categories {
-        id
-        name
-        color
-      }
-    }
-  }
-`;
+import { ENTRIES_QUERY } from "../queries/queries";
 
 const RecentEntries = () => {
   const { loading, error, data } = useQuery(ENTRIES_QUERY, {});

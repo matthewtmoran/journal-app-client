@@ -1,10 +1,10 @@
 import React from "react";
 import { FlatList, Text, View } from "react-native";
-import { ENTRIES_QUERY } from "./RecentEntries";
 import { useQuery } from "@apollo/react-hooks";
 import IEntry from "../interfaces/IEntry";
 import ICategory from "../interfaces/ICategory";
 import EntryResult from "./EntryResult";
+import { ENTRIES_QUERY } from "../queries/queries";
 
 interface IProps {
   searchTerm: string;
