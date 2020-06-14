@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import ICategory from "../interfaces/ICategory";
-import CategoryButton from "./CategoryButton";
+import CategoryPill from "./CategoryPill";
 import { FontAwesome } from "@expo/vector-icons";
 
 interface IProps {
@@ -15,10 +15,10 @@ const CategoryList = ({ categories, onPress, isAddButton }: IProps) => {
     <View style={styles.container}>
       {categories.map(({ id, name, color }, index) => {
         if (!onPress) {
-          return <CategoryButton key={index} category={{ id, name, color }} />;
+          return <CategoryPill key={index} category={{ id, name, color }} />;
         }
         return (
-          <CategoryButton
+          <CategoryPill
             category={{ id, name, color }}
             onPress={() => onPress({ id, name, color })}
             key={index}
@@ -28,7 +28,7 @@ const CategoryList = ({ categories, onPress, isAddButton }: IProps) => {
               size={16}
               color="#fff"
             />
-          </CategoryButton>
+          </CategoryPill>
         );
       })}
     </View>

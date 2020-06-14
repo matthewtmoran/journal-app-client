@@ -19,3 +19,13 @@ export const ENTRIES_QUERY = gql`
     }
   }
 `;
+
+export const CATEGORIES_QUERY = gql`
+  query CategoriesQuery {
+    categories {
+      id
+      name
+      color
+    }
+  }
+`;

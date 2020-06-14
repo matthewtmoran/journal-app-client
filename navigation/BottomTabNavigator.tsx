@@ -19,13 +19,18 @@ export default function BottomTabNavigator({ navigation, route }: any) {
   // });
 
   return (
-    <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+    <BottomTab.Navigator
+      initialRouteName={INITIAL_ROUTE_NAME}
+      tabBarOptions={{
+        showLabel: false,
+      }}
+    >
       <BottomTab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-code-working" />
+            <TabBarIcon focused={focused} name="md-mic" />
           ),
         }}
       />
@@ -35,18 +40,18 @@ export default function BottomTabNavigator({ navigation, route }: any) {
         component={SearchScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-code-working" />
+            <TabBarIcon focused={focused} name="md-search" />
           ),
         }}
       />
 
       <BottomTab.Screen
-        name="Links"
+        name="More"
         component={LinksScreen}
         options={{
-          title: "Resources",
+          title: "",
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon focused={focused} name="md-book" />
+            <TabBarIcon focused={focused} name="md-more" />
           ),
         }}
       />

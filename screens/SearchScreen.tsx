@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useQuery } from "@apollo/react-hooks";
-import { CATEGORIES_QUERY } from "../components/CategoriesContainer";
+import { CATEGORIES_QUERY } from "../queries/queries";
 import ICategory from "../interfaces/ICategory";
 import { RobotLightText } from "../components/StyledText";
 import EntryList from "../components/EntryList";

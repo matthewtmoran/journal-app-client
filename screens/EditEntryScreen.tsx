@@ -12,10 +12,8 @@ import IParams from "../interfaces/IParams";
 import SecondaryButton from "../components/SecondaryButton";
 import { RobotText } from "../components/StyledText";
 import LoadingModal from "../components/LoadingModal";
-import CategoriesContainer, {
-  CATEGORIES_QUERY,
-} from "../components/CategoriesContainer";
-import { ENTRIES_QUERY } from "../queries/queries";
+import CategoriesContainer from "../components/CategoriesContainer";
+import { CATEGORIES_QUERY, ENTRIES_QUERY } from "../queries/queries";
 import { CREATE_ENTRY_MUTATION } from "../queries/mutations";
 import commonStyles from "../style/common";
 import filterDuplicateCategories from "../utils/filterDuplicateCategories";

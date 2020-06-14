@@ -52,4 +52,39 @@ const CREATE_ENTRY_MUTATION = gql`
   }
 `;
 
-export { CREATE_ENTRY_MUTATION, SIGNIN_MUTATION, SIGNUP_MUTATION };
+const CREATE_CATEGORY_MUTATION = gql`
+  mutation CreateCategoryMutation($name: String!, $color: String!) {
+    createCategory(data: { name: $name, color: $color }) {
+      id
+      name
+      color
+    }
+  }
+`;
+
+const UPDATE_CATEGORY_MUTATION = gql`
+  mutation UpdateCategoryMutation($name: String!, $color: String!, $id: ID!) {
+    updateCategory(data: { id: $id, name: $name, color: $color }) {
+      id
+      name
+      color
+    }
+  }
+`;
+
+const DELETE_CATEGORY_MUTATION = gql`
+  mutation DeleteCategoryMutation($id: ID!) {
+    deleteCategory(id: $id) {
+      id
+    }
+  }
+`;
+
+export {
+  CREATE_CATEGORY_MUTATION,
+  UPDATE_CATEGORY_MUTATION,
+  DELETE_CATEGORY_MUTATION,
+  CREATE_ENTRY_MUTATION,
+  SIGNIN_MUTATION,
+  SIGNUP_MUTATION,
+};

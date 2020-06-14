@@ -9,7 +9,7 @@ interface IProps {
   onPress?: () => void;
 }
 
-const CategoryButton: React.FunctionComponent<IProps> = ({
+const CategoryPill: React.FunctionComponent<IProps> = ({
   category,
   children,
   onPress,
@@ -46,4 +46,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryButton;
+export default CategoryPill;

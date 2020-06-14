@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import ICategory from "../interfaces/ICategory";
 import { StyleSheet, View, Text } from "react-native";
-import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import CategoryList from "./CategoryList";
 import filterUsedCategories from "../utils/filterUsedCategories";
@@ -9,22 +8,13 @@ import commonStyles from "../style/common";
 import { RobotLightText, RobotText } from "./StyledText";
 import PrimaryButton from "./PrimaryButton";
 import CreateCategoryModal from "./CreateCategoryModal";
+import { CATEGORIES_QUERY } from "../queries/queries";
 
 interface IProps {
   categories: ICategory[];
   onAddCategory(category: ICategory): void;
   onRemoveCategory(category: ICategory): void;
 }
-
-export const CATEGORIES_QUERY = gql`
-  query CategoriesQuery {
-    categories {
-      id
-      name
-      color
-    }
-  }
-`;
 
 const CategoriesContainer = ({
   categories,

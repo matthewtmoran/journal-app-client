@@ -6,11 +6,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import RecentEntries from "../components/RecentEntries";
 import RecordAudioContainer from "../components/RecordAudio";
 import SearchInput from "../components/SearchInput";
-import { useAuth } from "../state/auth-context";
 
 export default function HomeScreen({ navigation }: any) {
-  const auth = useAuth();
-
   useFocusEffect(
     useCallback(() => {
       const stackNavigator = navigation.dangerouslyGetParent();
@@ -30,16 +27,7 @@ export default function HomeScreen({ navigation }: any) {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-      >
-        <View>
-          <Button
-            title="Logout"
-            onPress={() => {
-              auth.signOut();
-            }}
-          />
-        </View>
-      </ScrollView>
+      />
     </View>
   );
 }
