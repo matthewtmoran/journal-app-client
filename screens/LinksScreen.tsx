@@ -3,42 +3,49 @@ import * as WebBrowser from "expo-web-browser";
 import * as React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { RectButton, ScrollView } from "react-native-gesture-handler";
+import { ApolloConsumer } from "react-apollo";
 
 import { useAuth } from "../state/auth-context";
 
 export default function LinksScreen({ navigation }: any) {
   const auth = useAuth();
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
-      <OptionButton
-        icon="md-settings"
-        label="Settings"
-        onPress={() => navigation.navigate("Settings")}
-      />
+    <ApolloConsumer>
+      {(client) => {
+        return (
+          <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}
+          >
+            <OptionButton
+              icon="md-settings"
+              label="Settings"
+              onPress={() => navigation.navigate("Settings")}
+            />
 
-      <OptionButton
-        icon="md-pricetags"
-        label="Edit categories"
-        onPress={() => navigation.navigate("EditCategories")}
-      />
+            <OptionButton
+              icon="md-pricetags"
+              label="Edit categories"
+              onPress={() => navigation.navigate("EditCategories")}
+            />
 
-      {/* <OptionButton
+            {/* <OptionButton
         icon="md-cloud-download"
         label="Export Data"
         onPress={() => WebBrowser.openBrowserAsync("https://forums.expo.io")}
         isLastOption
       /> */}
 
-      <OptionButton
-        icon="md-exit"
-        label="Logout"
-        onPress={() => auth.signOut()}
-        isLastOption
-      />
-    </ScrollView>
+            <OptionButton
+              icon="md-exit"
+              label="Logout"
+              onPress={() => auth.signOut(client)}
+              isLastOption
+            />
+          </ScrollView>
+        );
+      }}
+    </ApolloConsumer>
   );
 }
 

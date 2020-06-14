@@ -36,7 +36,6 @@ const CategoryEditScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("callback");
       const stackNavigator = navigation.dangerouslyGetParent();
       if (stackNavigator) {
         stackNavigator.setOptions({

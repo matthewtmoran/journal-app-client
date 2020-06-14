@@ -93,8 +93,10 @@ const AuthProvider: React.FunctionComponent = ({ children }) => {
         });
       },
 
-      signOut: async () => {
+      signOut: async (client: any) => {
         dispatch({ type: SIGN_OUT });
+        await client.clearStore();
+        await client.resetStore();
         await AsyncStorage.removeItem(AUTH_TOKEN);
       },
 
