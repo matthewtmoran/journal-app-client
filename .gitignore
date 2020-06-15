@@ -14,4 +14,5 @@ web-report/
 .DS_Store
 
 config/dev.env
+config/prod.env
 .vscode/

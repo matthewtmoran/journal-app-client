@@ -16,6 +16,7 @@ import useCachedResources from "./hooks/useCachedResources";
 import LinkingConfiguration from "./navigation/LinkingConfiguration";
 import Main from "./components/Main";
 import { AuthProvider } from "./state/auth-context";
+import Constants from "expo-constants";
 
 const typeDefs = gql`
   input CreateCategoryInput {
@@ -40,7 +41,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = createHttpLink({
-  uri: "http://192.168.1.11:4000",
+  uri: Constants.manifest.extra.apiUrl,
 });
 
 const authLink = setContext((_, { headers }: any) => {

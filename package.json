@@ -1,11 +1,14 @@
 {
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
+    "start": "env-cmd -f ./config/dev.env expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
+    "build": "env-cmd -f ./config/prod.env expo publish",
+    "build-apk": "env-cmd -f ./config/prod.env expo build:android -t apk",
+    "build-app-bundle": "env-cmd -f ./config/prod.env expo build:android -t app-bundle",
     "test": "jest --watch --coverage=false --changedSince=origin/master"
   },
   "dependencies": {
@@ -46,6 +49,7 @@
     "@types/react-native": "~0.61.17",
     "@types/yup": "^0.29.0",
     "babel-preset-expo": "~8.1.0",
+    "env-cmd": "^10.1.0",
     "prettier": "^2.0.5",
     "typescript": "~3.8.3"
   },
