@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   actionBar: {
+    width: "100%",
     margin: 10,
     flexDirection: "row",
     justifyContent: "space-between",

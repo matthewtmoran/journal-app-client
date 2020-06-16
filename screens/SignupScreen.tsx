@@ -7,14 +7,10 @@ import { Formik } from "formik";
 import IParams from "../interfaces/IParams";
 import CardView from "../components/CardView";
 import PrimaryButton from "../components/PrimaryButton";
-import SecondaryButton from "../components/SecondaryButton";
 import CommonStyles from "../style/common";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
-import {
-  STATUS_PENDING,
-  STATUS_REJECTED,
-  useAuth,
-} from "../state/auth-context";
+import { STATUS_PENDING, STATUS_REJECTED } from "../constants";
+import { useAuth } from "../state/auth-context";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Required"),
@@ -43,14 +39,26 @@ interface ISignupScreen {
 
 const SignupScreen = ({ navigation }: ISignupScreen) => {
   const { signUp, status, error, reset } = useAuth();
+  const emailInput = useRef(null);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // @ts-ignore
+      emailInput.current.focus();
+    });
+
+    return unsubscribe;
+  });
 
   useFocusEffect(
     useCallback(() => {
-      // navigation.setOptions({
-      //   headerShown: false,
-      // });
+      navigation.setOptions({
+        headerTitle: "Register",
+      });
 
-      return reset();
+      return () => {
+        reset();
+      };
     }, [navigation])
   );
 
@@ -74,11 +82,10 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
           touched,
         }) => (
           <CardView>
-            <RobotLightText style={CommonStyles.title}>
-              Create Account
-            </RobotLightText>
+            <RobotLightText style={CommonStyles.title}>Register</RobotLightText>
             <RobotBoldText style={CommonStyles.label}>Email</RobotBoldText>
             <TextInput
+              ref={emailInput}
               onChangeText={handleChange("email")}
               onBlur={handleBlur("email")}
               value={values.email}
@@ -108,20 +115,13 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
               </Text>
             ) : null}
 
-            <View style={CommonStyles.actionBar}>
-              <SecondaryButton
-                styles={CommonStyles.secondaryButton}
-                onPress={() => navigation.navigate("Sign In")}
-              >
-                Log In
-              </SecondaryButton>
-              <PrimaryButton
-                onPress={handleSubmit}
-                isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
-              >
-                Create Account
-              </PrimaryButton>
-            </View>
+            <PrimaryButton
+              onPress={handleSubmit}
+              isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
+              styles={{ margin: 10, width: "auto" }}
+            >
+              Create an account
+            </PrimaryButton>
           </CardView>
         )}
       </Formik>

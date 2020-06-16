@@ -1,20 +1,16 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useEffect } from "react";
 import { useFocusEffect, NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput, Button } from "react-native";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
 import CardView from "../components/CardView";
 import PrimaryButton from "../components/PrimaryButton";
-import SecondaryButton from "../components/SecondaryButton";
 import IParams from "../interfaces/IParams";
 import CommonStyles from "../style/common";
 import * as yup from "yup";
 import { Formik } from "formik";
 import ICredentials from "../interfaces/ICredentials";
-import {
-  STATUS_PENDING,
-  STATUS_REJECTED,
-  useAuth,
-} from "../state/auth-context";
+import { STATUS_PENDING, STATUS_REJECTED } from "../constants";
+import { useAuth } from "../state/auth-context";
 
 interface ISignInScreenNavigationProps
   extends NavigationProp<IParams, "SignInScreen"> {}
@@ -38,14 +34,22 @@ const initialValues: ICredentials = {
 
 const SignInScreen = ({ navigation }: ISignInScreen) => {
   const { signIn, status, error, reset } = useAuth();
+  const emailInput = useRef(null);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // @ts-ignore
+      emailInput.current.focus();
+    });
+
+    return unsubscribe;
+  });
 
   useFocusEffect(
     useCallback(() => {
-      // navigation.setOptions({
-      //   headerShown: false,
-      // });
-
-      return reset();
+      navigation.setOptions({
+        headerTitle: "Log in",
+      });
     }, [navigation])
   );
 
@@ -69,11 +73,14 @@ const SignInScreen = ({ navigation }: ISignInScreen) => {
           touched,
         }) => (
           <CardView>
-            <RobotLightText style={CommonStyles.title}>Sign In</RobotLightText>
+            <RobotLightText style={CommonStyles.title}>
+              Welcome Back!
+            </RobotLightText>
             <RobotBoldText style={CommonStyles.label}>Email</RobotBoldText>
             <TextInput
+              ref={emailInput}
               onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
+              onBlur={() => handleBlur("email")}
               value={values.email}
               style={CommonStyles.input}
               placeholder="johndoe@example.com"
@@ -101,20 +108,13 @@ const SignInScreen = ({ navigation }: ISignInScreen) => {
               </Text>
             ) : null}
 
-            <View style={CommonStyles.actionBar}>
-              <SecondaryButton
-                styles={CommonStyles.secondaryButton}
-                onPress={() => navigation.navigate("Sign Up")}
-              >
-                Create Account
-              </SecondaryButton>
-              <PrimaryButton
-                onPress={handleSubmit}
-                isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
-              >
-                Sign in
-              </PrimaryButton>
-            </View>
+            <PrimaryButton
+              onPress={handleSubmit}
+              styles={{ margin: 10, width: "auto" }}
+              isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
+            >
+              Log in
+            </PrimaryButton>
           </CardView>
         )}
       </Formik>

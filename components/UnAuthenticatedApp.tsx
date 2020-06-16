@@ -3,11 +3,22 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import SignUpScreen from "../screens/SignupScreen";
 import SignInScreen from "../screens/SignInScreen";
+import WelcomeScreen from "../screens/WelcomeScreen";
 
 const Stack = createStackNavigator();
 
 const UnAuthenticatedApp = () => (
   <Stack.Navigator headerMode="screen">
+    <Stack.Screen
+      name="Journal"
+      component={WelcomeScreen}
+      options={{
+        title: "Journal App",
+        // When logging out, a pop animation feels intuitive
+        // You can remove this if you want the default 'push' animation
+        // animationTypeForReplace: state.isSignout ? "pop" : "push",
+      }}
+    />
     <Stack.Screen
       name="Sign Up"
       component={SignUpScreen}

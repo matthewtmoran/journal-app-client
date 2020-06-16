@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WelcomeScreen Should match snapshot 1`] = `
+<View
+  pointerEvents="box-none"
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <View
+    collapsable={true}
+    pointerEvents="box-none"
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "alignContent": "center",
+          "alignItems": "center",
+          "display": "flex",
+          "height": "100%",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <View>
+        <Text
+          style={
+            Array [
+              Object {
+                "fontSize": 30,
+                "margin": 20,
+              },
+              Object {
+                "fontFamily": "roboto-light",
+              },
+            ]
+          }
+        >
+          Welcome To Journal App β
+        </Text>
+        <TouchableOpacity
+          activeOpacity={0.2}
+        >
+          <View
+            style={
+              Object {
+                "backgroundColor": "#144568",
+                "borderRadius": 4,
+                "marginVertical": 8,
+                "paddingHorizontal": 25,
+                "paddingVertical": 12,
+                "width": "100%",
+              }
+            }
+          >
+            <Text
+              style={
+                Array [
+                  Object {
+                    "color": "#fff",
+                    "fontSize": 18,
+                    "textAlign": "center",
+                  },
+                  Object {
+                    "fontFamily": "roboto-light",
+                  },
+                ]
+              }
+            >
+              Log In
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={0.2}
+        >
+          <View
+            style={
+              Object {
+                "backgroundColor": "#fff",
+                "borderRadius": 4,
+                "marginVertical": 8,
+                "paddingHorizontal": 25,
+                "paddingVertical": 12,
+                "width": "100%",
+              }
+            }
+          >
+            <Text
+              style={
+                Array [
+                  Object {
+                    "color": "#144568",
+                    "fontSize": 18,
+                    "textAlign": "center",
+                  },
+                  Object {
+                    "fontFamily": "roboto-light",
+                  },
+                ]
+              }
+            >
+              Register
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</View>
+`;
