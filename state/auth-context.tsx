@@ -1,11 +1,21 @@
 import React, { useReducer, createContext, useEffect, useMemo } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { SIGNIN_MUTATION, SIGNUP_MUTATION } from "../queries/mutations";
-import { ActivityIndicator, AsyncStorage } from "react-native";
+import { AsyncStorage } from "react-native";
 import { AUTH_TOKEN } from "../constants";
 import ICredentials from "../interfaces/ICredentials";
 import TransparentLoader from "../components/TransparentLoader";
-import * as SplashScreen from "expo-splash-screen";
+import {
+  STATUS_REJECTED,
+  STATUS_RESOLVED,
+  STATUS_PENDING,
+  STATUS_IDLE,
+  STATUS_BOOTSTRAPPING,
+  ERROR,
+  SUCCESS,
+  STARTED,
+  LOGGED_OUT,
+} from "../constants";
 
 interface IAppState {
   isLoading: boolean;
@@ -20,21 +30,6 @@ interface IAppState {
 }
 
 const AuthContext = createContext<any>(undefined);
-
-const LOGGED_OUT = "LOGGED_OUT";
-const SIGN_IN = "SIGN_IN";
-const SIGN_UP = "SIGN_UP";
-const RESTORE_TOKEN = "RESTORE_TOKEN";
-const ERROR = "ERROR";
-const SUCCESS = "SUCCESS";
-const STARTED = "STARTED";
-const BOOTSTRAPPING = "BOOTSTRAPPING ";
-
-export const STATUS_REJECTED = "STATUS_REJECTED";
-const STATUS_RESOLVED = "STATUS_RESOLVED";
-export const STATUS_PENDING = "STATUS_PENDING";
-const STATUS_IDLE = "STATUS_IDLE";
-const STATUS_BOOTSTRAPPING = "STATUS_BOOTSTRAPPING";
 
 const initialState: IAppState = {
   isLoading: true,
@@ -95,16 +90,6 @@ const AuthProvider: React.FunctionComponent<{ userToken: string | null }> = ({
       if (userToken) {
         return dispatch({ type: SUCCESS, token: userToken });
       }
-
-      // dispatch({ type: STARTED });
-      // let token;
-      // try {
-      //   token = await AsyncStorage.getItem(AUTH_TOKEN);
-      //   dispatch({ type: SUCCESS, token });
-      // } catch (error) {
-      //   console.log({ error });
-      //   dispatch({ type: ERROR, error: error.message });
-      // }
     };
 
     bootstrapAsync();
