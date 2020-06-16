@@ -10,7 +10,11 @@ import CommonStyles from "../style/common";
 import * as yup from "yup";
 import { Formik } from "formik";
 import ICredentials from "../interfaces/ICredentials";
-import { useAuth } from "../state/auth-context";
+import {
+  STATUS_PENDING,
+  STATUS_REJECTED,
+  useAuth,
+} from "../state/auth-context";
 
 interface ISignInScreenNavigationProps
   extends NavigationProp<IParams, "SignInScreen"> {}
@@ -33,32 +37,25 @@ const initialValues: ICredentials = {
 };
 
 const SignInScreen = ({ navigation }: ISignInScreen) => {
-  const auth = useAuth();
-  const formikRef = useRef<any>(null);
+  const { signIn, status, error, reset } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
-      navigation.setOptions({
-        headerShown: false,
-      });
-      // Get StackNav navigation item
+      // navigation.setOptions({
+      //   headerShown: false,
+      // });
+
+      return reset();
     }, [navigation])
   );
-
-  const apiError = (error: string) => {
-    formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
-  };
 
   return (
     <View style={styles.container}>
       <Formik
-        innerRef={formikRef}
         validationSchema={schema}
         initialValues={initialValues}
-        onSubmit={(values: ICredentials) => {
-          auth.signIn(values).catch((error: any) => {
-            apiError(error.message);
-          });
+        onSubmit={async (values: ICredentials, { resetForm }) => {
+          await signIn(values);
         }}
       >
         {({
@@ -98,8 +95,10 @@ const SignInScreen = ({ navigation }: ISignInScreen) => {
               <Text style={CommonStyles.errorText}>{errors.password}</Text>
             ) : null}
 
-            {errors.api ? (
-              <Text style={CommonStyles.errorText}>{errors.api}</Text>
+            {status === STATUS_REJECTED ? (
+              <Text style={CommonStyles.errorText}>
+                {error.replace("GraphQL error: ", "")}
+              </Text>
             ) : null}
 
             <View style={CommonStyles.actionBar}>
@@ -111,9 +110,9 @@ const SignInScreen = ({ navigation }: ISignInScreen) => {
               </SecondaryButton>
               <PrimaryButton
                 onPress={handleSubmit}
-                isDisabled={!(isValid && dirty)}
+                isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
               >
-                Sign In
+                Sign in
               </PrimaryButton>
             </View>
           </CardView>

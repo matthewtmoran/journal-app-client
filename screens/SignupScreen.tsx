@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useReducer, useEffect } from "react";
 import { useFocusEffect, NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput } from "react-native";
 import * as yup from "yup";
@@ -10,7 +10,11 @@ import PrimaryButton from "../components/PrimaryButton";
 import SecondaryButton from "../components/SecondaryButton";
 import CommonStyles from "../style/common";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
-import { useAuth } from "../state/auth-context";
+import {
+  STATUS_PENDING,
+  STATUS_REJECTED,
+  useAuth,
+} from "../state/auth-context";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Required"),
@@ -25,7 +29,7 @@ interface ICredentials {
   password: string;
 }
 
-const initialValues = {
+const initialValues: ICredentials = {
   email: "",
   password: "",
 };
@@ -38,32 +42,25 @@ interface ISignupScreen {
 }
 
 const SignupScreen = ({ navigation }: ISignupScreen) => {
-  const auth = useAuth();
-  const formikRef = useRef<any>(null);
+  const { signUp, status, error, reset } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
-      navigation.setOptions({
-        headerShown: false,
-      });
-      // Get StackNav navigation item
+      // navigation.setOptions({
+      //   headerShown: false,
+      // });
+
+      return reset();
     }, [navigation])
   );
-
-  const apiError = (error: string) => {
-    formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
-  };
 
   return (
     <View style={styles.container}>
       <Formik
-        innerRef={formikRef}
         validationSchema={schema}
         initialValues={initialValues}
-        onSubmit={(values: ICredentials) => {
-          auth.signUp(values).catch((error: any) => {
-            apiError(error.message);
-          });
+        onSubmit={async (values: ICredentials, { resetForm }) => {
+          await signUp(values);
         }}
       >
         {({
@@ -105,8 +102,10 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
               <Text style={CommonStyles.errorText}>{errors.password}</Text>
             ) : null}
 
-            {errors.api ? (
-              <Text style={CommonStyles.errorText}>{errors.api}</Text>
+            {status === STATUS_REJECTED ? (
+              <Text style={CommonStyles.errorText}>
+                {error.replace("GraphQL error: ", "")}
+              </Text>
             ) : null}
 
             <View style={CommonStyles.actionBar}>
@@ -114,11 +113,11 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
                 styles={CommonStyles.secondaryButton}
                 onPress={() => navigation.navigate("Sign In")}
               >
-                Sign In
+                Log In
               </SecondaryButton>
               <PrimaryButton
                 onPress={handleSubmit}
-                isDisabled={!(isValid && dirty)}
+                isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
               >
                 Create Account
               </PrimaryButton>

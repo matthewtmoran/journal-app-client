@@ -2,15 +2,23 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as React from "react";
+import { AsyncStorage } from "react-native";
+import { AUTH_TOKEN } from "../constants";
 
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
+  const [token, setToken] = React.useState<string | null>(null);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     async function loadResourcesAndDataAsync() {
       try {
         SplashScreen.preventAutoHideAsync();
+
+        const userToken = await AsyncStorage.getItem(AUTH_TOKEN);
+        if (userToken) {
+          setToken(userToken);
+        }
 
         // Load fonts
         await Font.loadAsync({
@@ -36,5 +44,5 @@ export default function useCachedResources() {
     loadResourcesAndDataAsync();
   }, []);
 
-  return isLoadingComplete;
+  return { isLoadingComplete, token };
 }
