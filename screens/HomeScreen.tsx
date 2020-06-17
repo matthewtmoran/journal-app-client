@@ -24,10 +24,6 @@ export default function HomeScreen({ navigation }: any) {
       <SearchInput navigation={navigation} />
       <RecentEntries />
       <RecordAudioContainer navigation={navigation} />
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      />
     </View>
   );
 }
