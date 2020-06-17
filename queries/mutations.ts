@@ -52,6 +52,40 @@ const CREATE_ENTRY_MUTATION = gql`
   }
 `;
 
+const UPDATE_ENTRY_MUTATION = gql`
+  mutation UpdateEntryMutation(
+    $id: ID!
+    $title: String!
+    $body: String
+    $description: String
+    $categories: [CreateCategoryInput!]
+  ) {
+    updateEntry(
+      data: {
+        id: $id
+        title: $title
+        body: $body
+        description: $description
+        categories: $categories
+      }
+    ) {
+      id
+      title
+      description
+      createdAt
+      updatedAt
+      imagePath
+      audioPath
+      body
+      categories {
+        id
+        name
+        color
+      }
+    }
+  }
+`;
+
 const CREATE_CATEGORY_MUTATION = gql`
   mutation CreateCategoryMutation($name: String!, $color: String!) {
     createCategory(data: { name: $name, color: $color }) {
@@ -85,6 +119,7 @@ export {
   UPDATE_CATEGORY_MUTATION,
   DELETE_CATEGORY_MUTATION,
   CREATE_ENTRY_MUTATION,
+  UPDATE_ENTRY_MUTATION,
   SIGNIN_MUTATION,
   SIGNUP_MUTATION,
 };

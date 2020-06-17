@@ -149,11 +149,8 @@ const CreateCategoryModal = ({
                   })}
                 </View>
               </View>
-              <View style={{ ...commonStyles.actionBar, ...styles.actionBar }}>
-                <SecondaryButton
-                  styles={commonStyles.secondaryButton}
-                  onPress={toggleModalVisibility}
-                >
+              <View style={{ ...styles.actionBar }}>
+                <SecondaryButton onPress={toggleModalVisibility}>
                   Cancel
                 </SecondaryButton>
                 <PrimaryButton
@@ -187,6 +184,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   actionBar: {
+    marginHorizontal: 16,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 30,
   },
   label: {

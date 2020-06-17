@@ -1,6 +1,13 @@
+import ICategory from "./ICategory";
+
 interface IParams {
   EditEntry: {
-    audioPath: string;
+    id?: string;
+    audioPath?: string;
+    title?: string;
+    body?: string;
+    description?: string;
+    categories?: ICategory[];
   };
   SignInScreen: {};
   [key: string]: object;
