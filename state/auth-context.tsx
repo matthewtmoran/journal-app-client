@@ -11,11 +11,13 @@ import {
   STATUS_PENDING,
   STATUS_IDLE,
   STATUS_BOOTSTRAPPING,
+  BOOTSTRAP,
   ERROR,
   SUCCESS,
   STARTED,
   LOGGED_OUT,
 } from "../constants";
+import FullPageLoader from "../components/FullPageLoader";
 
 interface IAppState {
   isLoading: boolean;
@@ -34,18 +36,30 @@ const AuthContext = createContext<any>(undefined);
 const initialState: IAppState = {
   isLoading: true,
   userToken: null,
-  status: STATUS_IDLE,
+  status: STATUS_BOOTSTRAPPING,
   error: null,
 };
 
 interface IAction {
-  type: typeof ERROR | typeof SUCCESS | typeof STARTED | typeof LOGGED_OUT;
+  type:
+    | typeof ERROR
+    | typeof SUCCESS
+    | typeof STARTED
+    | typeof LOGGED_OUT
+    | typeof BOOTSTRAP;
   error?: string | null;
   token?: string | null;
 }
 
 const AuthReducer = (prevState: any, action: IAction) => {
   switch (action.type) {
+    case BOOTSTRAP:
+      return {
+        ...prevState,
+        userToken: null,
+        status: STATUS_BOOTSTRAPPING,
+        error: null,
+      };
     case STARTED:
       return {
         ...prevState,
@@ -79,19 +93,16 @@ const AuthReducer = (prevState: any, action: IAction) => {
   }
 };
 
-const AuthProvider: React.FunctionComponent<{ userToken: string | null }> = ({
-  children,
-  userToken,
-}) => {
+const AuthProvider: React.FunctionComponent = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, initialState);
 
   useEffect(() => {
     const bootstrapAsync = async () => {
+      const userToken = await AsyncStorage.getItem(AUTH_TOKEN);
       if (userToken) {
         return dispatch({ type: SUCCESS, token: userToken });
       }
     };
-
     bootstrapAsync();
   }, []);
 
@@ -143,6 +154,10 @@ const AuthProvider: React.FunctionComponent<{ userToken: string | null }> = ({
     }),
     []
   );
+
+  if (state.status === STATUS_BOOTSTRAPPING) {
+    return <FullPageLoader />;
+  }
 
   return (
     <AuthContext.Provider value={{ ...authContext, ...state }}>

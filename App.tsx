@@ -85,14 +85,14 @@ const client = new ApolloClient({
 });
 
 export default function App() {
-  const { isLoadingComplete, token } = useCachedResources();
+  const isLoadingComplete = useCachedResources();
   if (!isLoadingComplete) {
     return null;
   }
   return (
     <ApolloProvider client={client}>
       <NavigationContainer linking={LinkingConfiguration}>
-        <AuthProvider userToken={token}>
+        <AuthProvider>
           <Main />
         </AuthProvider>
       </NavigationContainer>
