@@ -1,5 +1,5 @@
 import React, { useReducer, createContext, useEffect, useMemo } from "react";
-import { useMutation } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { SIGNIN_MUTATION, SIGNUP_MUTATION } from "../queries/mutations";
 import { AsyncStorage } from "react-native";
 import { AUTH_TOKEN } from "../constants";
@@ -18,6 +18,7 @@ import {
   LOGGED_OUT,
 } from "../constants";
 import FullPageLoader from "../components/FullPageLoader";
+import { ENTRIES_QUERY } from "../queries/queries";
 
 interface IAppState {
   isLoading: boolean;
@@ -95,12 +96,17 @@ const AuthReducer = (prevState: any, action: IAction) => {
 
 const AuthProvider: React.FunctionComponent = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, initialState);
+  // might as well query here while we are doing other stuff
+  useQuery(ENTRIES_QUERY);
 
   useEffect(() => {
     const bootstrapAsync = async () => {
       const userToken = await AsyncStorage.getItem(AUTH_TOKEN);
       if (userToken) {
-        return dispatch({ type: SUCCESS, token: userToken });
+        // I just want the second laoding screen to occur for more than a flash
+        setTimeout(async () => {
+          dispatch({ type: SUCCESS, token: userToken });
+        }, 500);
       }
     };
     bootstrapAsync();
