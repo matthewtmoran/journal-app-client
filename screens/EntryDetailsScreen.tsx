@@ -1,14 +1,14 @@
-import React from "react";
-import { StyleSheet, View, TextInput } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+import React, { useLayoutEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { RouteProp, NavigationProp } from "@react-navigation/native";
 import IEntry from "../interfaces/IEntry";
 import PlayAudio from "../components/PlayAudio";
 import gql from "graphql-tag";
 import CategoryList from "../components/CategoryList";
 import { RobotText, RobotLightItalicText } from "../components/StyledText";
 import { format } from "date-fns";
-import commonStyles from "../style/common";
 import { ScrollView } from "react-native-gesture-handler";
+import SecondaryButton from "../components/SecondaryButton";
 
 interface IParams {
   EntryDetails: {
@@ -40,16 +40,35 @@ interface IEntryDetailsRouteProps extends RouteProp<IParams, "EntryDetails"> {}
 
 interface IEntryDetailsScreen {
   route: IEntryDetailsRouteProps;
+  navigation: ISignInScreenNavigationProps;
 }
 
-const EntryDetailsScreen = ({ route }: IEntryDetailsScreen) => {
+interface ISignInScreenNavigationProps
+  extends NavigationProp<IParams, "EntryDetails"> {}
+
+const EntryDetailsScreen = ({ navigation, route }: IEntryDetailsScreen) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: "Entry Details",
+      headerRight: () => (
+        <SecondaryButton
+          onPress={() =>
+            navigation.navigate("EditEntry", { ...route.params.entry })
+          }
+        >
+          Edit
+        </SecondaryButton>
+      ),
+    });
+  });
+
   const { entry } = route.params;
 
   const createdAt = format(new Date(entry.createdAt), "MMM Qo, yyyy");
   const updatedAt = format(new Date(entry.updatedAt), "MMM Qo, yyyy");
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.titleContainer}>
+      <View style={[styles.titleContainer, styles.sectionCard]}>
         <RobotText style={styles.title}>{entry.title}</RobotText>
 
         <View style={styles.section}>
@@ -60,36 +79,23 @@ const EntryDetailsScreen = ({ route }: IEntryDetailsScreen) => {
             </RobotLightItalicText>
           </View>
         </View>
+        <PlayAudio audioPath={entry.audioPath} />
       </View>
 
-      <PlayAudio audioPath={entry.audioPath} />
-      <CategoryList categories={entry.categories} />
-
-      <View style={styles.section}>
-        <RobotText style={styles.label}>Dictated Text</RobotText>
-        <View style={commonStyles.textAreaContainer}>
-          <TextInput
-            style={commonStyles.textArea}
-            placeholder="Body"
-            numberOfLines={5}
-            multiline={true}
-            value={entry.body}
-            // onChangeText={(text: string) => setDescription(text)}
-          />
-        </View>
+      <View style={styles.sectionCard}>
+        <RobotText style={styles.label}>Categories</RobotText>
+        <CategoryList categories={entry.categories} />
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.sectionCard}>
+        <RobotText style={styles.label}>Dictation</RobotText>
+        <RobotText style={styles.text}>{entry.body}</RobotText>
+      </View>
+
+      <View style={styles.sectionCard}>
         <RobotText style={styles.label}>Description</RobotText>
-        <View style={commonStyles.textAreaContainer}>
-          <TextInput
-            style={commonStyles.textArea}
-            placeholder="Description"
-            numberOfLines={5}
-            multiline={true}
-            value={entry.description}
-            // onChangeText={(text: string) => setDescription(text)}
-          />
+        <View>
+          <RobotText style={styles.text}>{entry.description}</RobotText>
         </View>
       </View>
     </ScrollView>
@@ -100,11 +106,24 @@ const styles = StyleSheet.create({
   container: {
     display: "flex",
     justifyContent: "center",
-    marginHorizontal: 16,
     marginVertical: 0,
   },
   section: {
     marginVertical: 8,
+  },
+  sectionCard: {
+    marginVertical: 8,
+    padding: 15,
+    borderRadius: 2,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 1,
   },
   titleContainer: {
     marginTop: 30,
@@ -121,10 +140,14 @@ const styles = StyleSheet.create({
   label: {
     color: "#333",
     fontSize: 18,
+    fontWeight: "bold",
     marginVertical: 5,
   },
   createdDate: {
     fontSize: 18,
+  },
+  text: {
+    fontSize: 16,
   },
   updatedDate: {
     fontSize: 16,

@@ -27,6 +27,20 @@ const typeDefs = gql`
   }
 `;
 
+const cleanTypeName = new ApolloLink((operation, forward) => {
+  if (operation.variables) {
+    const omitTypename = (key: any, value: any) =>
+      key === "__typename" ? undefined : value;
+    operation.variables = JSON.parse(
+      JSON.stringify(operation.variables),
+      omitTypename
+    );
+  }
+  return forward(operation).map((data) => {
+    return data;
+  });
+});
+
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.map(({ message, locations, path }) =>
@@ -62,7 +76,7 @@ const authLink = setContext((_, { headers }: any) => {
   });
 });
 
-const link = ApolloLink.from([authLink, errorLink, httpLink]);
+const link = ApolloLink.from([cleanTypeName, authLink, errorLink, httpLink]);
 
 const client = new ApolloClient({
   link,

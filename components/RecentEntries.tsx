@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { useQuery } from "@apollo/react-hooks";
 import EntryPreview from "./EntryPreview";
 import { RobotLightText } from "./StyledText";
@@ -10,9 +16,7 @@ const RecentEntries = () => {
   if (loading) {
     return (
       <View style={styles.emptyContainer}>
-        <RobotLightText style={styles.message}>
-          No recent entries.
-        </RobotLightText>
+        <ActivityIndicator size="small" color="#333" />
       </View>
     );
   }

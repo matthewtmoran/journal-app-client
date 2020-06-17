@@ -16,3 +16,4 @@ web-report/
 config/dev.env
 config/prod.env
 .vscode/
+coverage/

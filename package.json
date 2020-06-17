@@ -9,7 +9,8 @@
     "build": "env-cmd -f ./config/prod.env expo publish",
     "build-apk": "env-cmd -f ./config/prod.env expo build:android -t apk",
     "build-app-bundle": "env-cmd -f ./config/prod.env expo build:android -t app-bundle",
-    "test": "jest --watch --coverage=false --changedSince=origin/master"
+    "test": "jest --watch --coverage=false --changedSince=origin/master",
+    "test:coverage": "jest --coverage=true --changedSince=origin/master"
   },
   "dependencies": {
     "@expo/vector-icons": "^10.2.0",
@@ -45,16 +46,16 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
+    "@testing-library/react-native": "^5.0.3",
     "@types/react": "~16.9.23",
     "@types/react-native": "~0.61.17",
     "@types/yup": "^0.29.0",
     "babel-preset-expo": "~8.1.0",
     "env-cmd": "^10.1.0",
+    "jest-expo": "^37.0.0",
     "prettier": "^2.0.5",
+    "react-test-renderer": "^16.13.1",
     "typescript": "~3.8.3"
-  },
-  "jest": {
-    "preset": "jest-expo"
   },
   "private": true
 }

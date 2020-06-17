@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
 import { RobotThinText } from "./StyledText";
 
-export default class App extends Component {
-  render() {
-    return (
-      <View style={[styles.container, styles.horizontal]}>
-        <RobotThinText style={styles.titleText}>Journal App</RobotThinText>
-        <ActivityIndicator size="large" color="#333" />
-      </View>
-    );
-  }
-}
+const FullPageLoader = () => {
+  return (
+    <View style={[styles.container, styles.horizontal]}>
+      <RobotThinText style={styles.titleText}>Journal App</RobotThinText>
+      <ActivityIndicator size="large" color="#333" />
+    </View>
+  );
+};
+
+export default FullPageLoader;
 
 const styles = StyleSheet.create({
   container: {

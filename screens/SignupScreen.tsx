@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useReducer, useEffect } from "react";
 import { useFocusEffect, NavigationProp } from "@react-navigation/native";
 import { Text, StyleSheet, View, TextInput } from "react-native";
 import * as yup from "yup";
@@ -7,9 +7,9 @@ import { Formik } from "formik";
 import IParams from "../interfaces/IParams";
 import CardView from "../components/CardView";
 import PrimaryButton from "../components/PrimaryButton";
-import SecondaryButton from "../components/SecondaryButton";
 import CommonStyles from "../style/common";
 import { RobotBoldText, RobotLightText } from "../components/StyledText";
+import { STATUS_PENDING, STATUS_REJECTED } from "../constants";
 import { useAuth } from "../state/auth-context";
 
 const schema = yup.object().shape({
@@ -25,7 +25,7 @@ interface ICredentials {
   password: string;
 }
 
-const initialValues = {
+const initialValues: ICredentials = {
   email: "",
   password: "",
 };
@@ -38,32 +38,37 @@ interface ISignupScreen {
 }
 
 const SignupScreen = ({ navigation }: ISignupScreen) => {
-  const auth = useAuth();
-  const formikRef = useRef<any>(null);
+  const { signUp, status, error, reset } = useAuth();
+  const emailInput = useRef(null);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // @ts-ignore
+      emailInput.current.focus();
+    });
+
+    return unsubscribe;
+  });
 
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
-        headerShown: false,
+        headerTitle: "Register",
       });
-      // Get StackNav navigation item
+
+      return () => {
+        reset();
+      };
     }, [navigation])
   );
-
-  const apiError = (error: string) => {
-    formikRef.current.setErrors({ api: error.replace("GraphQL error:", "") });
-  };
 
   return (
     <View style={styles.container}>
       <Formik
-        innerRef={formikRef}
         validationSchema={schema}
         initialValues={initialValues}
-        onSubmit={(values: ICredentials) => {
-          auth.signUp(values).catch((error: any) => {
-            apiError(error.message);
-          });
+        onSubmit={async (values: ICredentials, { resetForm }) => {
+          await signUp(values);
         }}
       >
         {({
@@ -77,11 +82,10 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
           touched,
         }) => (
           <CardView>
-            <RobotLightText style={CommonStyles.title}>
-              Create Account
-            </RobotLightText>
+            <RobotLightText style={CommonStyles.title}>Register</RobotLightText>
             <RobotBoldText style={CommonStyles.label}>Email</RobotBoldText>
             <TextInput
+              ref={emailInput}
               onChangeText={handleChange("email")}
               onBlur={handleBlur("email")}
               value={values.email}
@@ -105,24 +109,19 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
               <Text style={CommonStyles.errorText}>{errors.password}</Text>
             ) : null}
 
-            {errors.api ? (
-              <Text style={CommonStyles.errorText}>{errors.api}</Text>
+            {status === STATUS_REJECTED ? (
+              <Text style={CommonStyles.errorText}>
+                {error.replace("GraphQL error: ", "")}
+              </Text>
             ) : null}
 
-            <View style={CommonStyles.actionBar}>
-              <SecondaryButton
-                styles={CommonStyles.secondaryButton}
-                onPress={() => navigation.navigate("Sign In")}
-              >
-                Sign In
-              </SecondaryButton>
-              <PrimaryButton
-                onPress={handleSubmit}
-                isDisabled={!(isValid && dirty)}
-              >
-                Create Account
-              </PrimaryButton>
-            </View>
+            <PrimaryButton
+              onPress={handleSubmit}
+              isDisabled={status === STATUS_PENDING || !(isValid && dirty)}
+              styles={{ margin: 10, width: "auto" }}
+            >
+              Create an account
+            </PrimaryButton>
           </CardView>
         )}
       </Formik>
