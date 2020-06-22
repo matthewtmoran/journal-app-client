@@ -64,8 +64,8 @@ const EntryDetailsScreen = ({ navigation, route }: IEntryDetailsScreen) => {
 
   const { entry } = route.params;
 
-  const createdAt = format(new Date(entry.createdAt), "MMM Qo, yyyy");
-  const updatedAt = format(new Date(entry.updatedAt), "MMM Qo, yyyy");
+  const createdAt = format(new Date(entry.createdAt), "MMM do, yyyy");
+  const updatedAt = format(new Date(entry.updatedAt), "MMM do, yyyy");
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={[styles.titleContainer, styles.sectionCard]}>
