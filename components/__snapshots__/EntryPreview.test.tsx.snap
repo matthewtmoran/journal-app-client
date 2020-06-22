@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/EntryPreview Should match snapshot 1`] = `
+<View
+  pointerEvents="box-none"
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <View
+    collapsable={true}
+    pointerEvents="box-none"
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+  >
+    <TouchableOpacity
+      activeOpacity={0.2}
+      style={
+        Object {
+          "backgroundColor": "#fff",
+          "borderRadius": 4,
+          "display": "flex",
+          "elevation": 3,
+          "flex": 1,
+          "height": 100,
+          "justifyContent": "space-between",
+          "marginHorizontal": 10,
+          "marginVertical": 10,
+          "padding": 8,
+          "shadowColor": "#000",
+          "shadowOffset": Object {
+            "height": 1,
+            "width": 0,
+          },
+          "shadowOpacity": 0.22,
+          "shadowRadius": 2.22,
+        }
+      }
+      testID="preview-button"
+    >
+      <View>
+        <Text
+          numberOfLines={1}
+          style={
+            Array [
+              Object {
+                "fontSize": 16,
+                "height": 18,
+              },
+              Object {
+                "fontFamily": "roboto",
+              },
+            ]
+          }
+        >
+          My-Title
+        </Text>
+        <Text
+          style={
+            Array [
+              Object {
+                "fontSize": 14,
+                "overflow": "hidden",
+              },
+              Object {
+                "fontFamily": "roboto-light-italic",
+              },
+            ]
+          }
+        >
+          Jun 17th, 2020
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={
+            Array [
+              Object {
+                "fontSize": 14,
+                "overflow": "hidden",
+              },
+              Object {
+                "fontFamily": "roboto-thin-italic",
+              },
+            ]
+          }
+        >
+          This is a description
+        </Text>
+      </View>
+      <ScrollView
+        data={
+          Array [
+            Object {
+              "color": "#c1c1c1",
+              "id": "1",
+              "name": "thoughts",
+            },
+            Object {
+              "color": "#333333",
+              "id": "2",
+              "name": "feelings",
+            },
+          ]
+        }
+        disableVirtualization={false}
+        horizontal={false}
+        initialNumToRender={10}
+        listKey="CategoryColorList-1"
+        maxToRenderPerBatch={10}
+        numColumns={1}
+        onEndReachedThreshold={2}
+        removeClippedSubviews={false}
+        scrollEventThrottle={50}
+        stickyHeaderIndices={Array []}
+        style={
+          Object {
+            "display": "flex",
+            "flexDirection": "row",
+            "overflow": "scroll",
+          }
+        }
+        updateCellsBatchingPeriod={50}
+        viewabilityConfigCallbackPairs={Array []}
+        windowSize={21}
+      >
+        <View
+          style={null}
+        >
+          <View
+            style={
+              Object {
+                "backgroundColor": "#c1c1c1",
+                "borderRadius": 100,
+                "height": 16,
+                "margin": 2,
+                "width": 16,
+              }
+            }
+            testID="category"
+          />
+        </View>
+        <View
+          style={null}
+        >
+          <View
+            style={
+              Object {
+                "backgroundColor": "#333333",
+                "borderRadius": 100,
+                "height": 16,
+                "margin": 2,
+                "width": 16,
+              }
+            }
+            testID="category"
+          />
+        </View>
+      </ScrollView>
+    </TouchableOpacity>
+  </View>
+</View>
+`;
