@@ -9,8 +9,8 @@
     "build": "env-cmd -f ./config/prod.env expo publish",
     "build-apk": "env-cmd -f ./config/prod.env expo build:android -t apk",
     "build-app-bundle": "env-cmd -f ./config/prod.env expo build:android -t app-bundle",
-    "test": "jest --watch --coverage=false --changedSince=origin/master",
-    "test:coverage": "jest --coverage=true --changedSince=origin/master"
+    "test": "jest --watch --coverage=false",
+    "test:coverage": "jest --coverage=true"
   },
   "dependencies": {
     "@expo/vector-icons": "^10.2.0",
