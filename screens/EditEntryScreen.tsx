@@ -291,6 +291,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
                       value={values.body}
                       style={commonStyles.textArea}
                       placeholder="Body"
+                      multiline={true}
                       numberOfLines={5}
                       onBlur={handleBlur("body")}
                       onChangeText={handleChange("body")}
