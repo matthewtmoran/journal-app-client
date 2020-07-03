@@ -8,14 +8,18 @@ import {
 } from "react-native";
 import { useQuery } from "@apollo/react-hooks";
 import EntryPreview from "./EntryPreview";
-import { RobotLightText } from "./StyledText";
+import { RobotLightText, RobotText } from "./StyledText";
 import { ENTRIES_QUERY } from "../queries/queries";
+import { useEntry } from "../state/entry-context";
+import { STATUS_PENDING } from "../constants";
+import CardView from "./CardView";
 
 const RecentEntries = () => {
   const { loading, error, data } = useQuery(ENTRIES_QUERY, {});
+  const { status } = useEntry();
   if (loading) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={styles.emptyContainer} testID="entries-loading">
         <ActivityIndicator size="small" color="#333" />
       </View>
     );
@@ -36,6 +40,14 @@ const RecentEntries = () => {
 
   return (
     <View style={styles.container}>
+      {status === STATUS_PENDING ? (
+        <CardView style={styles.entryNotification}>
+          <ActivityIndicator size={20} style={styles.notificationText} />
+          <RobotText style={styles.notificationText}>
+            Processing Entry
+          </RobotText>
+        </CardView>
+      ) : null}
       {!recent.length ? (
         <View style={styles.emptyContainer}>
           <RobotLightText style={styles.message}>
@@ -69,6 +81,20 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  entryNotification: {
+    borderRadius: 2,
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    marginVertical: 4,
+    paddingHorizontal: 8,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  notificationText: {
+    paddingHorizontal: 8,
+    fontSize: 16,
   },
   message: {
     fontStyle: "italic",

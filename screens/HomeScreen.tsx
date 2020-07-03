@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
-import { Button, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { ScrollView } from "react-native-gesture-handler";
 
 import RecentEntries from "../components/RecentEntries";
 import RecordAudioContainer from "../components/RecordAudio";
