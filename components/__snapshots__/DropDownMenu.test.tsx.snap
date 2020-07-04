@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`components/DropDownMenu Should match snapshot 1`] = `
+<View
+  pointerEvents="box-none"
+  style={
+    Object {
+      "flex": 1,
+    }
+  }
+>
+  <View
+    collapsable={true}
+    pointerEvents="box-none"
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+  >
+    <Modal
+      animationType="none"
+      hardwareAccelerated={false}
+      hideModalContentWhileAnimating={false}
+      scrollHorizontal={false}
+      scrollOffset={0}
+      scrollOffsetMax={0}
+      scrollTo={null}
+      supportedOrientations={
+        Array [
+          "portrait",
+          "landscape",
+        ]
+      }
+      swipeThreshold={100}
+      transparent={true}
+      visible={false}
+    >
+      <View
+        hideModalContentWhileAnimating={false}
+        pointerEvents="box-none"
+        scrollHorizontal={false}
+        scrollOffset={0}
+        scrollOffsetMax={0}
+        scrollTo={null}
+        style={
+          Object {
+            "flex": 1,
+            "justifyContent": "center",
+            "margin": 37.5,
+            "transform": Array [
+              Object {
+                "translateY": 0,
+              },
+            ],
+          }
+        }
+        supportedOrientations={
+          Array [
+            "portrait",
+            "landscape",
+          ]
+        }
+        swipeThreshold={100}
+      >
+        <TouchableWithoutFeedback>
+          <View
+            style={
+              Object {
+                "bottom": 0,
+                "left": 0,
+                "position": "absolute",
+                "right": 0,
+                "top": 0,
+                "zIndex": 9999,
+              }
+            }
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "alignItems": "flex-start",
+                    "backgroundColor": "white",
+                    "display": "flex",
+                    "elevation": 11,
+                    "position": "absolute",
+                    "shadowColor": "#000",
+                    "shadowOffset": Object {
+                      "height": 5,
+                      "width": 0,
+                    },
+                    "shadowOpacity": 0.36,
+                    "shadowRadius": 6.68,
+                    "textAlign": "left",
+                    "width": "50%",
+                    "zIndex": 9999,
+                  },
+                  Object {
+                    "right": 0,
+                    "top": 0,
+                  },
+                ]
+              }
+            >
+              <TouchableOpacity
+                activeOpacity={0.2}
+                style={
+                  Object {
+                    "alignItems": "flex-start",
+                    "flex": 1,
+                    "paddingHorizontal": 14,
+                    "paddingVertical": 8,
+                    "textAlign": "left",
+                    "width": "100%",
+                  }
+                }
+              >
+                <Text
+                  style={
+                    Array [
+                      Object {
+                        "fontSize": 16,
+                        "textAlign": "left",
+                      },
+                      Object {
+                        "fontFamily": "roboto",
+                      },
+                    ]
+                  }
+                >
+                  Edit
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.2}
+                style={
+                  Object {
+                    "alignItems": "flex-start",
+                    "flex": 1,
+                    "paddingHorizontal": 14,
+                    "paddingVertical": 8,
+                    "textAlign": "left",
+                    "width": "100%",
+                  }
+                }
+              >
+                <Text
+                  style={
+                    Array [
+                      Object {
+                        "fontSize": 16,
+                        "textAlign": "left",
+                      },
+                      Object {
+                        "fontFamily": "roboto",
+                      },
+                    ]
+                  }
+                >
+                  Remove
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    </Modal>
+  </View>
+</View>
+`;
