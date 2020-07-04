@@ -11,6 +11,7 @@ import { CATEGORIES_QUERY, ENTRIES_QUERY } from "../queries/queries";
 import {
   UPDATE_ENTRY_MUTATION,
   CREATE_ENTRY_MUTATION,
+  DELETE_ENTRY_MUTATION,
 } from "../queries/mutations";
 import {
   STATUS_REJECTED,
@@ -115,6 +116,15 @@ const EntryProvider: FunctionComponent = ({ children }) => {
     },
   });
 
+  const [deleteEntry] = useMutation(DELETE_ENTRY_MUTATION, {
+    onCompleted(data) {
+      dispatch({ type: SUCCESS });
+    },
+    onError(error) {
+      dispatch({ type: ERROR, error: error.message });
+    },
+  });
+
   const entryContext = useMemo(
     () => ({
       handleCreateEntry: async ({
@@ -191,7 +201,6 @@ const EntryProvider: FunctionComponent = ({ children }) => {
                 query: CATEGORIES_QUERY,
               }
             )!;
-
             cache.writeQuery({
               query: CATEGORIES_QUERY,
               data: {
@@ -208,6 +217,33 @@ const EntryProvider: FunctionComponent = ({ children }) => {
             });
           },
         });
+      },
+
+      handleDeleteEntry: async ({ id, audioPath }: IEntry) => {
+        dispatch({ type: STARTED });
+
+        deleteEntry({
+          variables: { id },
+          update: (cache, { data: { deleteEntry } }) => {
+            const { entries } = cache.readQuery<{ entries: IEntry[] }>({
+              query: ENTRIES_QUERY,
+            })!;
+
+            cache.writeQuery({
+              query: ENTRIES_QUERY,
+              data: { entries: entries.filter((e) => e.id !== deleteEntry.id) },
+            });
+          },
+        });
+
+        try {
+          FileSystem.deleteAsync(audioPath);
+        } catch (error) {
+          console.log(
+            "There was an error deleting file from file system",
+            error
+          );
+        }
       },
     }),
     []
