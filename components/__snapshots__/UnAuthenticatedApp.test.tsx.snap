@@ -52,6 +52,14 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
             }
           >
             <View
+              collapsable={false}
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            />
+            <View
               accessibilityElementsHidden={false}
               closing={false}
               gestureVelocityImpact={0.3}

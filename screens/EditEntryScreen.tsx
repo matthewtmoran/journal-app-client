@@ -11,16 +11,10 @@ import * as yup from "yup";
 import IParams from "../interfaces/IParams";
 import SecondaryButton from "../components/SecondaryButton";
 import { RobotText } from "../components/StyledText";
-import LoadingModal from "../components/LoadingModal";
 import CategoriesContainer from "../components/CategoriesContainer";
-import { CATEGORIES_QUERY, ENTRIES_QUERY } from "../queries/queries";
-import {
-  UPDATE_ENTRY_MUTATION,
-  CREATE_ENTRY_MUTATION,
-} from "../queries/mutations";
 import commonStyles from "../style/common";
-import filterDuplicateCategories from "../utils/filterDuplicateCategories";
 import IEntry from "../interfaces/IEntry";
+import { useEntry } from "../state/entry-context";
 
 interface IEditEntryRouteProps extends RouteProp<IParams, "EditEntry"> {}
 interface IEditEntryNavigationProps
@@ -70,7 +64,7 @@ const updateEntries = (entries: IEntry[], updated: IEntry) => {
 };
 
 const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { handleUpdateEntry, handleCreateEntry } = useEntry();
   const date = format(Date.now(), "MM/dd/yyyy h:mmaaa");
   const initialValues: IFormValues = {
     title: route.params.title || `${date}`,
@@ -79,111 +73,14 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
     categories: route.params.categories || [],
   };
 
-  const [updateEntry] = useMutation(UPDATE_ENTRY_MUTATION, {
-    onCompleted(data) {
-      setIsLoading(false);
-      navigation.navigate("Home");
-    },
-    onError(error) {
-      console.log({ error });
-    },
-  });
-
-  const [createEntry] = useMutation(CREATE_ENTRY_MUTATION, {
-    onCompleted(data) {
-      setIsLoading(false);
-      navigation.navigate("Home");
-    },
-    onError(error) {
-      console.log({ error });
-    },
-  });
-
-  const handleCreate = async ({
-    title,
-    body,
-    description,
-    categories,
-    audioPath,
-  }: ICreateInput) => {
-    const audioFile: string = await FileSystem.readAsStringAsync(audioPath, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    createEntry({
-      variables: { title, body, description, audioPath, audioFile, categories },
-      update: (cache, { data: { createEntry } }: any) => {
-        const data: any = cache.readQuery({ query: ENTRIES_QUERY });
-        const categoryData: any = cache.readQuery({ query: CATEGORIES_QUERY });
-
-        cache.writeQuery({
-          query: CATEGORIES_QUERY,
-          data: {
-            categories: filterDuplicateCategories(
-              categoryData.categories,
-              createEntry.categories
-            ),
-          },
-        });
-
-        cache.writeQuery({
-          query: ENTRIES_QUERY,
-          data: { entries: [...data.entries, createEntry] },
-        });
-      },
-    });
-  };
-
-  const handleUpdate = async ({
-    id,
-    title,
-    body,
-    description,
-    categories,
-  }: IUpdateInput) => {
-    updateEntry({
-      variables: {
-        id,
-        title,
-        body,
-        description,
-        categories,
-      },
-      update: (cache, { data: { updateEntry } }) => {
-        const { entries } = cache.readQuery<{ entries: IEntry[] }>({
-          query: ENTRIES_QUERY,
-        })!;
-        const { categories } = cache.readQuery<{ categories: ICategory[] }>({
-          query: CATEGORIES_QUERY,
-        })!;
-
-        cache.writeQuery({
-          query: CATEGORIES_QUERY,
-          data: {
-            categories: filterDuplicateCategories(
-              categories,
-              updateEntry.categories
-            ),
-          },
-        });
-
-        cache.writeQuery({
-          query: ENTRIES_QUERY,
-          data: { entries: updateEntries(entries, updateEntry) },
-        });
-      },
-    });
-  };
-
   const handleSave = async ({
     title,
     body,
     description,
     categories,
   }: IFormValues) => {
-    setIsLoading(true);
     if (!route.params.id) {
-      handleCreate({
+      handleCreateEntry({
         title,
         body,
         description,
@@ -191,7 +88,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
         audioPath: route.params.audioPath,
       });
     } else {
-      handleUpdate({
+      handleUpdateEntry({
         id: route.params.id,
         title,
         body,
@@ -199,6 +96,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
         categories,
       });
     }
+    navigation.navigate("Home");
   };
 
   return (
@@ -245,7 +143,6 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
             return (
               <View>
                 {/* title section */}
-                <LoadingModal isModalVisible={isLoading} />
                 <View style={commonStyles.section}>
                   <RobotText style={{ ...commonStyles.label, ...styles.label }}>
                     Title
@@ -291,6 +188,7 @@ const EditEntryScreen = ({ route, navigation }: IEditEntryScreen) => {
                       value={values.body}
                       style={commonStyles.textArea}
                       placeholder="Body"
+                      multiline={true}
                       numberOfLines={5}
                       onBlur={handleBlur("body")}
                       onChangeText={handleChange("body")}

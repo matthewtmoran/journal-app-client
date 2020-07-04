@@ -1,4 +1,5 @@
 import ICategory from "./ICategory";
+import IEntry from "./IEntry";
 
 interface IParams {
   EditEntry: {
@@ -10,6 +11,10 @@ interface IParams {
     categories?: ICategory[];
   };
   SignInScreen: {};
+  EntryDetails: {
+    entry: IEntry;
+  };
+  Home: {};
   [key: string]: object;
 }
 export default IParams;

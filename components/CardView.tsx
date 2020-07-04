@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from "react";
 import { View, StyleSheet } from "react-native";
 
-const CardView: FunctionComponent<{}> = ({ children }) => {
-  return <View style={styles.container}>{children}</View>;
+const CardView: FunctionComponent<{ style: any }> = ({ children, style }) => {
+  return <View style={{ ...styles.container, ...style }}>{children}</View>;
 };
 
 const styles = StyleSheet.create({

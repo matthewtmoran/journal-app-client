@@ -86,6 +86,14 @@ const UPDATE_ENTRY_MUTATION = gql`
   }
 `;
 
+const DELETE_ENTRY_MUTATION = gql`
+  mutation DeleteEntryMutation($id: ID!) {
+    deleteEntry(id: $id) {
+      id
+    }
+  }
+`;
+
 const CREATE_CATEGORY_MUTATION = gql`
   mutation CreateCategoryMutation($name: String!, $color: String!) {
     createCategory(data: { name: $name, color: $color }) {
@@ -120,6 +128,7 @@ export {
   DELETE_CATEGORY_MUTATION,
   CREATE_ENTRY_MUTATION,
   UPDATE_ENTRY_MUTATION,
+  DELETE_ENTRY_MUTATION,
   SIGNIN_MUTATION,
   SIGNUP_MUTATION,
 };

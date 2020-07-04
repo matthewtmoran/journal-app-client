@@ -1,40 +1,18 @@
-import React, { useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import IEntry from "../interfaces/IEntry";
 import PlayAudio from "../components/PlayAudio";
-import gql from "graphql-tag";
 import CategoryList from "../components/CategoryList";
 import { RobotText, RobotLightItalicText } from "../components/StyledText";
 import { format } from "date-fns";
 import { ScrollView } from "react-native-gesture-handler";
 import SecondaryButton from "../components/SecondaryButton";
-
-interface IParams {
-  EntryDetails: {
-    entry: IEntry;
-  };
-  [key: string]: object;
-}
-
-export const ENTRIES_QUERY = gql`
-  query EntiesQuery {
-    entries {
-      id
-      title
-      description
-      imagePath
-      audioPath
-      body
-      createdAt
-      categories {
-        id
-        name
-        color
-      }
-    }
-  }
-`;
+import DropDownMenu from "../components/DropDownMenu";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { useEntry } from "../state/entry-context";
+import IParams from "../interfaces/IParams";
+import TabBarIcon from "../components/TabBarIcon";
 
 interface IEntryDetailsRouteProps extends RouteProp<IParams, "EntryDetails"> {}
 
@@ -47,30 +25,74 @@ interface ISignInScreenNavigationProps
   extends NavigationProp<IParams, "EntryDetails"> {}
 
 const EntryDetailsScreen = ({ navigation, route }: IEntryDetailsScreen) => {
+  const [show, setShow] = useState(false);
+  const [isConfirmDialogVisible, setIsConfirmDialogVisible] = useState(false);
+  const { handleDeleteEntry } = useEntry();
+
+  const menuItems = [
+    {
+      label: "Edit",
+      action: () => {
+        hideDropDown();
+        navigation.navigate("EditEntry", { ...route.params.entry });
+      },
+    },
+    {
+      label: "Remove",
+      action: () => {
+        hideDropDown();
+        toggleConfirmDialogVisibility();
+      },
+    },
+  ];
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Entry Details",
       headerRight: () => (
-        <SecondaryButton
-          onPress={() =>
-            navigation.navigate("EditEntry", { ...route.params.entry })
-          }
-        >
-          Edit
+        <SecondaryButton onPress={() => showDropDown()}>
+          <TabBarIcon focused={false} name="md-more" />
         </SecondaryButton>
       ),
     });
   });
 
+  const showDropDown = () => {
+    setShow(true);
+  };
+
+  const hideDropDown = () => {
+    setShow(false);
+  };
+
+  const toggleConfirmDialogVisibility = () => {
+    setIsConfirmDialogVisible((current) => {
+      return !current;
+    });
+  };
+
+  const handleConfirmDelete = (entry: IEntry) => {
+    handleDeleteEntry(entry);
+    toggleConfirmDialogVisibility();
+    navigation.navigate("Home");
+  };
+
   const { entry } = route.params;
 
-  const createdAt = format(new Date(entry.createdAt), "MMM Qo, yyyy");
-  const updatedAt = format(new Date(entry.updatedAt), "MMM Qo, yyyy");
+  const createdAt = format(new Date(entry.createdAt), "MMM do, yyyy");
+  const updatedAt = format(new Date(entry.updatedAt), "MMM do, yyyy");
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <DropDownMenu isVisible={show} hide={hideDropDown} items={menuItems} />
+      <ConfirmDialog
+        title={`Are you sure you want to delete the ${entry.title}?`}
+        message={`This will remove the entry and audio file from your device.`}
+        isVisible={isConfirmDialogVisible}
+        onConfirm={() => handleConfirmDelete(entry)}
+        onCancel={toggleConfirmDialogVisibility}
+      />
       <View style={[styles.titleContainer, styles.sectionCard]}>
         <RobotText style={styles.title}>{entry.title}</RobotText>
-
         <View style={styles.section}>
           <View style={styles.dateContainer}>
             <RobotText style={styles.createdDate}>{createdAt} - </RobotText>
@@ -81,17 +103,14 @@ const EntryDetailsScreen = ({ navigation, route }: IEntryDetailsScreen) => {
         </View>
         <PlayAudio audioPath={entry.audioPath} />
       </View>
-
       <View style={styles.sectionCard}>
         <RobotText style={styles.label}>Categories</RobotText>
         <CategoryList categories={entry.categories} />
       </View>
-
       <View style={styles.sectionCard}>
         <RobotText style={styles.label}>Dictation</RobotText>
         <RobotText style={styles.text}>{entry.body}</RobotText>
       </View>
-
       <View style={styles.sectionCard}>
         <RobotText style={styles.label}>Description</RobotText>
         <View>

@@ -1,12 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FlatList } from "react-native";
 import IEntry from "../interfaces/IEntry";
 import {
   RobotLightItalicText,
   RobotThinItalicText,
-  RobotLightText,
   RobotText,
 } from "./StyledText";
 import { format } from "date-fns";
@@ -24,7 +23,7 @@ const EntryResult = ({ entry, index }: IProps) => {
     navigation.navigate("EntryDetails", { entry });
   };
 
-  const updatedAt = format(new Date(entry.updatedAt), "MMM Qo, yyyy");
+  const updatedAt = format(new Date(entry.updatedAt), "MMM do, yyyy");
 
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
