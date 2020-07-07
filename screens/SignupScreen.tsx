@@ -38,7 +38,7 @@ interface ISignupScreen {
 }
 
 const SignupScreen = ({ navigation }: ISignupScreen) => {
-  const { signUp, status, error, reset } = useAuth();
+  const { signUp, status, error } = useAuth();
   const emailInput = useRef(null);
 
   useEffect(() => {
@@ -55,10 +55,6 @@ const SignupScreen = ({ navigation }: ISignupScreen) => {
       navigation.setOptions({
         headerTitle: "Register",
       });
-
-      return () => {
-        reset();
-      };
     }, [navigation])
   );
 
