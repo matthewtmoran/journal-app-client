@@ -18,118 +18,135 @@ exports[`components/EntryPreview Should match snapshot 1`] = `
       }
     }
   >
-    <TouchableOpacity
-      activeOpacity={0.2}
+    <RNGestureHandlerButton
+      collapsable={false}
+      rippleColor={0}
       style={
-        Object {
-          "backgroundColor": "#fff",
-          "borderRadius": 4,
-          "display": "flex",
-          "elevation": 3,
-          "flex": 1,
-          "height": 100,
-          "justifyContent": "space-between",
-          "marginHorizontal": 10,
-          "marginVertical": 10,
-          "padding": 8,
-          "shadowColor": "#000",
-          "shadowOffset": Object {
-            "height": 1,
-            "width": 0,
+        Array [
+          Object {
+            "overflow": "hidden",
           },
-          "shadowOpacity": 0.22,
-          "shadowRadius": 2.22,
-        }
+          undefined,
+        ]
       }
-      testID="preview-button"
     >
-      <View>
-        <Text
-          numberOfLines={1}
-          style={
-            Array [
-              Object {
-                "fontSize": 16,
-                "height": 18,
-              },
-              Object {
-                "fontFamily": "roboto",
-              },
-            ]
-          }
-        >
-          My-Title
-        </Text>
-        <Text
-          style={
-            Array [
-              Object {
-                "fontSize": 14,
-                "overflow": "hidden",
-              },
-              Object {
-                "fontFamily": "roboto-light-italic",
-              },
-            ]
-          }
-        >
-          Jun 17th, 2020
-        </Text>
-        <Text
-          numberOfLines={1}
-          style={
-            Array [
-              Object {
-                "fontSize": 14,
-                "overflow": "hidden",
-              },
-              Object {
-                "fontFamily": "roboto-thin-italic",
-              },
-            ]
-          }
-        >
-          This is a description
-        </Text>
-      </View>
-      <ScrollView
-        data={
-          Array [
-            Object {
-              "color": "#c1c1c1",
-              "id": "1",
-              "name": "thoughts",
-            },
-            Object {
-              "color": "#333333",
-              "id": "2",
-              "name": "feelings",
-            },
-          ]
-        }
-        disableVirtualization={false}
-        horizontal={false}
-        initialNumToRender={10}
-        listKey="CategoryColorList-1"
-        maxToRenderPerBatch={10}
-        numColumns={1}
-        onEndReachedThreshold={2}
-        removeClippedSubviews={false}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
+      <View
+        accessible={true}
         style={
           Object {
+            "backgroundColor": "#fff",
+            "borderRadius": 4,
             "display": "flex",
-            "flexDirection": "row",
-            "overflow": "scroll",
+            "elevation": 3,
+            "flex": 1,
+            "marginHorizontal": 10,
+            "marginVertical": 10,
+            "padding": 8,
+            "shadowColor": "#000",
+            "shadowOffset": Object {
+              "height": 1,
+              "width": 0,
+            },
+            "shadowOpacity": 0.22,
+            "shadowRadius": 2.22,
+            "width": 150,
           }
         }
-        updateCellsBatchingPeriod={50}
-        viewabilityConfigCallbackPairs={Array []}
-        windowSize={21}
+        testID="preview-button"
       >
-        <View
-          style={null}
+        <ScrollView
+          collapsable={false}
+          style={
+            Object {
+              "flex": 1,
+              "overflow": "hidden",
+            }
+          }
+        >
+          <Text
+            numberOfLines={1}
+            style={
+              Array [
+                Object {
+                  "fontSize": 16,
+                  "height": 18,
+                },
+                Object {
+                  "fontFamily": "roboto",
+                },
+              ]
+            }
+          >
+            My-Title
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "fontSize": 14,
+                  "marginVertical": 2,
+                  "overflow": "hidden",
+                },
+                Object {
+                  "fontFamily": "roboto-light-italic",
+                },
+              ]
+            }
+          >
+            Jun 17th, 2020
+          </Text>
+          <Text
+            numberOfLines={2}
+            style={
+              Array [
+                Object {
+                  "fontSize": 14,
+                  "marginVertical": 2,
+                  "overflow": "hidden",
+                },
+                Object {
+                  "fontFamily": "roboto-thin-italic",
+                },
+              ]
+            }
+          >
+            This is a description
+          </Text>
+          <ScrollView
+            collapsable={false}
+          >
+            <Text
+              style={
+                Array [
+                  Object {
+                    "fontSize": 14,
+                    "marginVertical": 2,
+                    "overflow": "hidden",
+                  },
+                  Object {
+                    "fontFamily": "roboto-thin-italic",
+                  },
+                ]
+              }
+            >
+              This is the body
+            </Text>
+          </ScrollView>
+        </ScrollView>
+        <ScrollView
+          collapsable={false}
+          contentContainerStyle={
+            Object {
+              "justifyContent": "flex-start",
+            }
+          }
+          horizontal={true}
+          style={
+            Object {
+              "height": 20,
+              "maxHeight": 20,
+            }
+          }
         >
           <View
             style={
@@ -143,10 +160,6 @@ exports[`components/EntryPreview Should match snapshot 1`] = `
             }
             testID="category"
           />
-        </View>
-        <View
-          style={null}
-        >
           <View
             style={
               Object {
@@ -159,9 +172,9 @@ exports[`components/EntryPreview Should match snapshot 1`] = `
             }
             testID="category"
           />
-        </View>
-      </ScrollView>
-    </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </RNGestureHandlerButton>
   </View>
 </View>
 `;

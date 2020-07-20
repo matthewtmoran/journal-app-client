@@ -25,11 +25,14 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
         }
       }
     >
-      <RNCSafeAreaView
+      <RNCSafeAreaProvider
         style={
-          Object {
-            "flex": 1,
-          }
+          Array [
+            Object {
+              "flex": 1,
+            },
+            undefined,
+          ]
         }
       >
         <View
@@ -203,9 +206,7 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
                             >
                               Welcome To Journal App β
                             </Text>
-                            <TouchableOpacity
-                              activeOpacity={0.2}
-                            >
+                            <>
                               <View
                                 style={
                                   Object {
@@ -235,10 +236,8 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
                                   Log In
                                 </Text>
                               </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              activeOpacity={0.2}
-                            >
+                            </>
+                            <>
                               <View
                                 style={
                                   Object {
@@ -268,7 +267,7 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
                                   Register
                                 </Text>
                               </View>
-                            </TouchableOpacity>
+                            </>
                           </View>
                         </View>
                       </View>
@@ -298,9 +297,9 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
                               style={
                                 Object {
                                   "backgroundColor": "rgb(255, 255, 255)",
-                                  "borderBottomColor": "rgb(224, 224, 224)",
+                                  "borderBottomColor": "rgb(216, 216, 216)",
                                   "flex": 1,
-                                  "shadowColor": "rgb(224, 224, 224)",
+                                  "shadowColor": "rgb(216, 216, 216)",
                                   "shadowOffset": Object {
                                     "height": 0.5,
                                     "width": 0,
@@ -375,7 +374,7 @@ exports[`UnAuthentitcatedApp Should render welcome screen by default 1`] = `
             </View>
           </View>
         </View>
-      </RNCSafeAreaView>
+      </RNCSafeAreaProvider>
     </View>
   </View>
 </View>
