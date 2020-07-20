@@ -134,7 +134,6 @@ const EntryProvider: FunctionComponent = ({ children }) => {
         categories,
         audioPath,
       }: ICreateInput) => {
-        console.log("handleCreateEntry ");
         dispatch({ type: STARTED });
         const audioFile: string = await FileSystem.readAsStringAsync(
           audioPath,
