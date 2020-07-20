@@ -97,7 +97,6 @@ const AuthReducer = (prevState: any, action: IAction) => {
 const AuthProvider: React.FunctionComponent = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, initialState);
   // might as well query here while we are doing other stuff
-  useQuery(ENTRIES_QUERY);
 
   useEffect(() => {
     const bootstrapAsync = async () => {
@@ -107,6 +106,8 @@ const AuthProvider: React.FunctionComponent = ({ children }) => {
         setTimeout(async () => {
           dispatch({ type: SUCCESS, token: userToken });
         }, 500);
+      } else {
+        dispatch({ type: LOGGED_OUT, token: null });
       }
     };
     bootstrapAsync();
