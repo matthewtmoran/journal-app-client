@@ -45,9 +45,7 @@ exports[`WelcomeScreen Should match snapshot 1`] = `
         >
           Welcome To Journal App β
         </Text>
-        <TouchableOpacity
-          activeOpacity={0.2}
-        >
+        <>
           <View
             style={
               Object {
@@ -77,10 +75,8 @@ exports[`WelcomeScreen Should match snapshot 1`] = `
               Log In
             </Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.2}
-        >
+        </>
+        <>
           <View
             style={
               Object {
@@ -110,7 +106,7 @@ exports[`WelcomeScreen Should match snapshot 1`] = `
               Register
             </Text>
           </View>
-        </TouchableOpacity>
+        </>
       </View>
     </View>
   </View>

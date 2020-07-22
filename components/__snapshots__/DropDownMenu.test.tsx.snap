@@ -103,8 +103,7 @@ exports[`components/DropDownMenu Should match snapshot 1`] = `
                 ]
               }
             >
-              <TouchableOpacity
-                activeOpacity={0.2}
+              <
                 style={
                   Object {
                     "alignItems": "flex-start",
@@ -131,9 +130,8 @@ exports[`components/DropDownMenu Should match snapshot 1`] = `
                 >
                   Edit
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.2}
+              </>
+              <
                 style={
                   Object {
                     "alignItems": "flex-start",
@@ -160,7 +158,7 @@ exports[`components/DropDownMenu Should match snapshot 1`] = `
                 >
                   Remove
                 </Text>
-              </TouchableOpacity>
+              </>
             </View>
           </View>
         </TouchableWithoutFeedback>
