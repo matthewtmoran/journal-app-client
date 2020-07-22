@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import IEntry from "../interfaces/IEntry";
@@ -78,7 +78,6 @@ const EntryDetailsScreen = ({ navigation, route }: IEntryDetailsScreen) => {
   };
 
   const { entry } = route.params;
-
   const createdAt = format(new Date(entry.createdAt), "MMM do, yyyy");
   const updatedAt = format(new Date(entry.updatedAt), "MMM do, yyyy");
   return (

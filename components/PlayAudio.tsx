@@ -1,9 +1,10 @@
-import React, { useRef, useReducer, useEffect } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Dimensions, Slider } from "react-native";
-import { Audio } from "expo-av";
 import { RobotLightText } from "./StyledText";
 import { FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useAudio } from "../state/audio-context";
+import { useNavigation } from "@react-navigation/native";
 
 interface IState {
   isLoading: boolean;
@@ -52,14 +53,6 @@ const initialState: IState = {
   playbackInstanceName: "Test",
 };
 
-const AUDIO_PLAYING = "AUDIO_PLAYING";
-const UPDATE_STATUS = "UPDATE_STATUS";
-const AUDIO_UNLOADED = "AUDIO_UNLOADED";
-const AUDIO_LOADING = "AUDIO_LOADING";
-const AUDIO_LOADING_DONE = "AUDIO_LOADING_DONE";
-const AUDION_FINISHED_PLAYING = "AUDION_FINISHED_PLAYING";
-const UPDATE_POSITION = "UPDATE_POSITION";
-
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get("window");
 
 interface IPlayAudio {
@@ -67,224 +60,44 @@ interface IPlayAudio {
 }
 
 const PlayAudio = ({ audioPath }: IPlayAudio) => {
-  const playbackInstance = useRef<Audio.Sound | null>(null);
-  const isSeeking = useRef<boolean>(false);
-  const shouldPlayAtEndOfSeek = useRef<boolean>(false);
-  const [state, dispatch] = useReducer((prevState: IState, action: IAction) => {
-    switch (action.type) {
-      case AUDION_FINISHED_PLAYING: {
-        return { ...prevState, soundDuration: 0, soundPosition: null };
-      }
-      case AUDIO_LOADING:
-        return { ...prevState, isLoading: true };
-      case AUDIO_PLAYING:
-        if (!action.status) {
-          return { ...prevState };
-        }
-        const {
-          durationMillis,
-          positionMillis,
-          shouldCorrectPitch,
-          shouldPlay,
-          rate,
-          isMuted,
-          volume,
-          isPlaying,
-        } = action.status;
+  const {
+    loadAudio,
+    unloadAudio,
+    handlePlayPausePress,
+    getSeekSliderPosition,
+    onSeekSliderValueChange,
+    onSeekSliderSlidingComplete,
+    getPlaybackTimestamp,
+    isPlaybackAllowed,
+    isLoading,
+    isPlaying,
+    stopAudioAndUnload,
+  } = useAudio();
 
-        return {
-          ...prevState,
-          isPlaybackAllowed: true,
-          isPlaying,
-          muted: isMuted,
-          rate,
-          shouldCorrectPitch,
-          shouldPlay,
-          soundDuration: durationMillis,
-          soundPosition: positionMillis,
-          volume,
-        };
-
-      case AUDIO_UNLOADED: {
-        return {
-          ...prevState,
-          isPlaybackAllowed: false,
-          soundDuration: 0,
-          soundPosition: null,
-        };
-      }
-
-      case UPDATE_STATUS: {
-        if (!action.status) {
-          return { ...prevState };
-        }
-        const {
-          durationMillis,
-          positionMillis,
-          shouldPlay,
-          isPlaying,
-          // isBuffering,
-          rate,
-          isMuted,
-          volume,
-          shouldCorrectPitch,
-        } = action.status;
-        return {
-          ...prevState,
-          isMuted,
-          isPlaying,
-          soundDuration: durationMillis,
-          soundPosition: positionMillis,
-          rate,
-          shouldCorrectPitch,
-          shouldPlay,
-          volume,
-        };
-      }
-
-      case AUDIO_LOADING_DONE: {
-        return { ...prevState, isLoading: false };
-      }
-
-      case UPDATE_POSITION: {
-        // @ts-ignore
-        return { ...prevState, soundPosition: action.status.soundPosition };
-      }
-
-      default:
-        return { ...prevState };
-    }
-  }, initialState);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    loadAudio();
+    const unsubscribe = navigation.addListener("blur", (e) => {
+      stopAudioAndUnload();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
+    loadAudio(audioPath);
     return () => {
       unloadAudio();
     };
   }, [audioPath]);
 
-  const updateScreenForSoundStatus = (status: IStatus) => {
-    if (status.didJustFinish) {
-      if (playbackInstance.current) {
-        playbackInstance.current.stopAsync();
-      }
-      dispatch({ type: AUDION_FINISHED_PLAYING, status });
-    }
-    if (status.isLoaded) {
-      dispatch({ type: AUDIO_PLAYING, status });
-    } else {
-      dispatch({ type: AUDIO_UNLOADED });
-    }
-    if (status.error) {
-      console.log(`FATAL PLAYER ERROR: ${status.error}`);
-    }
-  };
-
-  const unloadAudio = async () => {
-    dispatch({ type: AUDIO_LOADING });
-    if (playbackInstance.current) {
-      playbackInstance.current.setOnPlaybackStatusUpdate(null);
-      playbackInstance.current = null;
-    }
-    dispatch({ type: AUDIO_LOADING_DONE });
-  };
-
-  const loadAudio = async () => {
-    dispatch({ type: AUDIO_LOADING });
-    const { sound, status } = await Audio.Sound.createAsync(
-      { uri: audioPath },
-      {
-        isLooping: false,
-        isMuted: state.muted,
-        volume: state.volume,
-        rate: state.rate,
-        shouldCorrectPitch: state.shouldCorrectPitch,
-      },
-      (status) => updateScreenForSoundStatus(status as any)
-    );
-    sound.setProgressUpdateIntervalAsync(50);
-    playbackInstance.current = sound;
-    dispatch({ type: AUDIO_LOADING_DONE });
-  };
-
-  const handlePlayPausePress = () => {
-    if (playbackInstance.current) {
-      if (state.isPlaying) {
-        playbackInstance.current.pauseAsync();
-      } else {
-        playbackInstance.current.playAsync();
-      }
-    }
-  };
-
-  const onSeekSliderValueChange = (value: number) => {
-    if (playbackInstance.current !== null && !isSeeking.current) {
-      shouldPlayAtEndOfSeek.current = state.shouldPlay;
-      playbackInstance.current.pauseAsync();
-      isSeeking.current = true;
-    }
-  };
-
-  const onSeekSliderSlidingComplete = async (value: number) => {
-    if (playbackInstance.current !== null) {
-      const seekPosition = value * state.soundDuration;
-      if (shouldPlayAtEndOfSeek.current) {
-        await playbackInstance.current.playFromPositionAsync(seekPosition);
-      } else {
-        await playbackInstance.current.setPositionAsync(seekPosition);
-      }
-      isSeeking.current = false;
-    }
-  };
-
-  const getSeekSliderPosition = () => {
-    if (
-      playbackInstance.current != null &&
-      state.soundPosition != null &&
-      state.soundDuration != null
-    ) {
-      return state.soundPosition / state.soundDuration;
-    }
-    return 0;
-  };
-
-  const getPlaybackTimestamp = () => {
-    if (
-      playbackInstance.current != null &&
-      state.soundPosition != null &&
-      state.soundDuration != null
-    ) {
-      return `${getMMSSFromMillis(state.soundPosition)} / ${getMMSSFromMillis(
-        state.soundDuration
-      )}`;
-    }
-    return "";
-  };
-
-  const getMMSSFromMillis = (millis: number) => {
-    const totalSeconds = millis / 1000;
-    const seconds = Math.floor(totalSeconds % 60);
-    const minutes = Math.floor(totalSeconds / 60);
-
-    const padWithZero = (number: number) => {
-      const string = number.toString();
-      if (number < 10) {
-        return "0" + string;
-      }
-      return string;
-    };
-
-    return padWithZero(minutes) + ":" + padWithZero(seconds);
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={handlePlayPausePress}
-        disabled={!state.isPlaybackAllowed || state.isLoading}
+        disabled={!isPlaybackAllowed || isLoading}
       >
         <FontAwesome
-          name={state.isPlaying ? "pause" : "play"}
+          name={isPlaying ? "pause" : "play"}
           size={28}
           color="#333"
         />
@@ -298,7 +111,7 @@ const PlayAudio = ({ audioPath }: IPlayAudio) => {
             width={DEVICE_WIDTH / 1.35}
             onValueChange={onSeekSliderValueChange}
             onSlidingComplete={onSeekSliderSlidingComplete}
-            disabled={!state.isPlaybackAllowed || state.isLoading}
+            disabled={!isPlaybackAllowed || isLoading}
           />
         </View>
         <RobotLightText style={styles.playbackTimestamp}>

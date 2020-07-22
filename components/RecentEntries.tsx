@@ -13,6 +13,7 @@ import { ENTRIES_QUERY } from "../queries/queries";
 import { useEntry } from "../state/entry-context";
 import { STATUS_PENDING } from "../constants";
 import CardView from "./CardView";
+import IEntry from "../interfaces/IEntry";
 
 const RecentEntries = () => {
   const { loading, error, data } = useQuery(ENTRIES_QUERY, {});
@@ -32,11 +33,9 @@ const RecentEntries = () => {
     );
   }
 
-  const recent = data.entries
-    .sort((a: any, b: any) => {
-      return Number(new Date(a.createdAt)) - Number(new Date(b.createdAt));
-    })
-    .slice(data.entries.length - 4, data.entries.length);
+  const recent = data.entries.sort((a: IEntry, b: IEntry) => {
+    return Number(new Date(b.updatedAt)) - Number(new Date(a.updatedAt));
+  });
 
   return (
     <View style={styles.container}>
@@ -55,14 +54,13 @@ const RecentEntries = () => {
           </RobotLightText>
         </View>
       ) : (
-        <FlatList
+        <FlatList<IEntry>
           listKey="RecentEntries"
           style={styles.entries}
           data={recent}
-          keyExtractor={(item) => item.id}
-          horizontal={false}
-          numColumns={2}
-          renderItem={({ item, index }: any) => (
+          keyExtractor={(item) => item.id!}
+          horizontal={true}
+          renderItem={({ item, index }) => (
             <EntryPreview entry={item} index={index} />
           )}
         />
@@ -101,6 +99,7 @@ const styles = StyleSheet.create({
   },
   entries: {
     margin: 10,
+    maxHeight: 250,
   },
   item: {
     padding: 10,

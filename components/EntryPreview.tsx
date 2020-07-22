@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { FlatList } from "react-native";
 import IEntry from "../interfaces/IEntry";
 import {
   RobotLightItalicText,
@@ -10,13 +9,17 @@ import {
 } from "./StyledText";
 import { format } from "date-fns";
 import commonStyles from "../style/common";
+import {
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 
 interface IProps {
   entry: IEntry;
   index: number;
 }
 
-const EntryPreview = ({ entry, index }: IProps) => {
+const EntryPreview = ({ entry }: IProps) => {
   const navigation = useNavigation();
   const handlePress = () => {
     navigation.navigate("EntryDetails", { entry });
@@ -24,28 +27,35 @@ const EntryPreview = ({ entry, index }: IProps) => {
 
   const updatedAt = format(new Date(entry.updatedAt), "MMM do, yyyy");
   return (
-    <TouchableOpacity
+    <TouchableWithoutFeedback
       style={styles.container}
       onPress={handlePress}
       testID="preview-button"
     >
-      <View>
+      <ScrollView style={styles.details}>
         <RobotText numberOfLines={1} style={styles.title}>
           {entry.title}
         </RobotText>
         <RobotLightItalicText style={styles.description}>
           {updatedAt}
         </RobotLightItalicText>
-        <RobotThinItalicText numberOfLines={1} style={styles.description}>
+        <RobotThinItalicText numberOfLines={2} style={styles.description}>
           {entry.description}
         </RobotThinItalicText>
-      </View>
-      <FlatList
+        <ScrollView>
+          <RobotThinItalicText style={styles.description}>
+            {entry.body}
+          </RobotThinItalicText>
+        </ScrollView>
+      </ScrollView>
+      <ScrollView
+        horizontal={true}
         style={styles.categories}
-        data={entry.categories}
-        keyExtractor={(item) => item.id!}
-        listKey={`CategoryColorList-${index}`}
-        renderItem={({ item }) => {
+        contentContainerStyle={{
+          justifyContent: "flex-start",
+        }}
+      >
+        {entry.categories.map((item) => {
           return (
             <View
               testID={"category"}
@@ -56,15 +66,15 @@ const EntryPreview = ({ entry, index }: IProps) => {
               }}
             />
           );
-        }}
-      />
-    </TouchableOpacity>
+        })}
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: 100,
+    width: 150,
     marginVertical: 10,
     marginHorizontal: 10,
     flex: 1,
@@ -80,12 +90,14 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
     display: "flex",
-    justifyContent: "space-between",
+  },
+  details: {
+    overflow: "hidden",
+    flex: 1,
   },
   categories: {
-    display: "flex",
-    flexDirection: "row",
-    overflow: "scroll",
+    height: 20,
+    maxHeight: 20,
   },
   item: {
     padding: 10,
@@ -97,6 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   description: {
+    marginVertical: 2,
     fontSize: 14,
     overflow: "hidden",
   },
