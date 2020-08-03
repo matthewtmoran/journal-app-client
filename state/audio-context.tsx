@@ -63,6 +63,7 @@ const AUDIO_LOADING = "AUDIO_LOADING";
 const AUDIO_LOADING_DONE = "AUDIO_LOADING_DONE";
 const AUDION_FINISHED_PLAYING = "AUDION_FINISHED_PLAYING";
 const UPDATE_POSITION = "UPDATE_POSITION";
+const UPDATE_INTERVAL = 100;
 
 const AudioReducer = (prevState: IState, action: IAction): IState => {
   switch (action.type) {
@@ -159,7 +160,7 @@ const AudioProvider: FunctionComponent = ({ children }) => {
         },
         (status) => updateScreenForSoundStatus(status as any)
       );
-      sound.setProgressUpdateIntervalAsync(100);
+      sound.setProgressUpdateIntervalAsync(UPDATE_INTERVAL);
       playbackInstance.current = sound;
       dispatch({ type: AUDIO_LOADING_DONE });
     },

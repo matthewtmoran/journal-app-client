@@ -1,10 +1,11 @@
 import React, { useRef, useReducer, useEffect, useState } from "react";
-import { Text, Button, Easing } from "react-native";
+import { Easing } from "react-native";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import { View, StyleSheet, TouchableOpacity, Animated } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { RobotThinText } from "./StyledText";
+import getMMSSFromMillis from "../utils/getMMSSFromMillis";
 
 interface IState {
   isLoading: boolean;
@@ -14,12 +15,19 @@ interface IState {
   muted: boolean;
   soundPosition: null;
   soundDuration: null;
-  recordingDuration: null;
+  recordingDuration: null | number;
   shouldPlay: boolean;
   isPlaying: boolean;
   shouldCorrectPitch: boolean;
   volume: number;
   rate: number;
+}
+
+interface IRecordingStatus {
+  canRecord: boolean;
+  isRecording: boolean;
+  durationMillis: number;
+  isDoneRecording: boolean;
 }
 
 const initialState: IState = {
@@ -56,6 +64,8 @@ const PERMISSION_GRANTED = "PERMISSION_GRANTED";
 const RECORD_AUDIO = "RECORD_AUDIO";
 const RECORDING = "RECORDING";
 const RECORDING_COMPLETE = "RECORDING_COMPLETE";
+const UPDATE_STATUS = "UPDATE_STATUS";
+const UPDATE_INTERVAL = 100;
 
 const recordingOptions = {
   // android not currently in use, but parameters are required
@@ -79,6 +89,23 @@ const recordingOptions = {
   },
 };
 
+const RecordingReducer = (prevState: IState, action: any) => {
+  switch (action.type) {
+    case RECORDING_COMPLETE:
+      return { ...prevState, isLoading: false, isRecording: false };
+    case RECORDING:
+      return { ...prevState, isLoading: false };
+    case RECORD_AUDIO:
+      return { ...prevState, isRecording: true, isLoading: true };
+    case PERMISSION_GRANTED:
+      return { ...prevState, isRecordingPermisable: true };
+    case UPDATE_STATUS:
+      return { ...prevState, ...action.payload };
+    default:
+      return { ...prevState };
+  }
+};
+
 const RecordAudioContainer = ({ navigation }: any) => {
   const recording = useRef<Audio.Recording | null>(null);
   const [animated] = useState(new Animated.Value(0));
@@ -86,6 +113,8 @@ const RecordAudioContainer = ({ navigation }: any) => {
 
   const [animated2] = useState(new Animated.Value(0));
   const [opacityA2] = useState(new Animated.Value(1));
+
+  const [state, dispatch] = useReducer(RecordingReducer, initialState);
 
   const startAnimation = () => {
     Animated.stagger(1, [
@@ -128,39 +157,12 @@ const RecordAudioContainer = ({ navigation }: any) => {
   };
 
   useEffect(() => {
-    () => stopAnimation();
-  }, []);
-
-  const [state, dispatch] = useReducer((prevState: IState, action: any) => {
-    switch (action.type) {
-      case RECORDING_COMPLETE:
-        return { ...prevState, isLoading: false, isRecording: false };
-      case RECORDING:
-        return { ...prevState, isLoading: false };
-      case RECORD_AUDIO:
-        return { ...prevState, isRecording: true, isLoading: true };
-      case PERMISSION_GRANTED:
-        return { ...prevState, isRecordingPermisable: true };
-      default:
-        return { ...prevState };
-    }
-  }, initialState);
-
-  useEffect(() => {
     getPermissions();
   }, []);
 
-  const handleRecord = async () => {
-    if (!state.isRecordingPermisable) {
-      return;
-    }
-    if (state.isRecording) {
-      finishRecording();
-    } else {
-      startAnimation();
-      recordAudio();
-    }
-  };
+  useEffect(() => {
+    () => stopAnimation();
+  }, []);
 
   const getPermissions = async () => {
     const permission = await Audio.getPermissionsAsync();
@@ -186,6 +188,41 @@ const RecordAudioContainer = ({ navigation }: any) => {
     }
   };
 
+  const handleRecord = async () => {
+    if (!state.isRecordingPermisable) {
+      return;
+    }
+    if (state.isRecording) {
+      finishRecording();
+    } else {
+      startAnimation();
+      recordAudio();
+    }
+  };
+
+  const updateScreenForRecordingStatus = (status: IRecordingStatus) => {
+    if (status.canRecord) {
+      dispatch({
+        type: UPDATE_STATUS,
+        payload: {
+          isRecording: status.isRecording,
+          recordingDuration: status.durationMillis,
+        },
+      });
+    } else if (status.isDoneRecording) {
+      dispatch({
+        type: UPDATE_STATUS,
+        payload: {
+          isRecording: false,
+          recordingDuration: status.durationMillis,
+        },
+      });
+      if (!state.isLoading) {
+        finishRecording();
+      }
+    }
+  };
+
   const recordAudio = async () => {
     dispatch({ type: RECORD_AUDIO });
     await Audio.setAudioModeAsync(AudioModeSettings);
@@ -196,10 +233,10 @@ const RecordAudioContainer = ({ navigation }: any) => {
     try {
       const rec = new Audio.Recording();
       await rec.prepareToRecordAsync(recordingOptions);
-
+      rec.setOnRecordingStatusUpdate(updateScreenForRecordingStatus);
+      rec.setProgressUpdateInterval(UPDATE_INTERVAL);
       recording.current = rec;
       await recording.current.startAsync();
-
       dispatch({ type: RECORDING });
     } catch (error) {
       console.log({ error });
@@ -233,6 +270,13 @@ const RecordAudioContainer = ({ navigation }: any) => {
     } catch (error) {
       console.log({ error });
     }
+  };
+
+  const getRecordingTimestamp = () => {
+    if (state.recordingDuration !== null) {
+      return `${getMMSSFromMillis(state.recordingDuration)}`;
+    }
+    return `${getMMSSFromMillis(0)}`;
   };
 
   return (
@@ -273,6 +317,9 @@ const RecordAudioContainer = ({ navigation }: any) => {
           color={state.isRecording ? "rgb(153,0,0)" : "green"}
         />
       </TouchableOpacity>
+      <View>
+        <RobotThinText>{getRecordingTimestamp()}</RobotThinText>
+      </View>
     </View>
   );
 };
@@ -284,7 +331,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   buttonContainer: {
-    borderWidth: 5,
+    borderWidth: 2,
     borderColor: "#c4c4c4",
     borderRadius: 100,
     height: 200,
